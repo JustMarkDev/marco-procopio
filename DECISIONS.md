@@ -16,9 +16,9 @@ This document records the agreed direction for Marco Procopio's portfolio and th
 
 - **Language:** TypeScript in strict mode.
 - **Framework:** Next.js using the App Router and React Server Components by default.
-- **Package manager:** Bun, always using the latest stable release rather than pinning a Bun version. Commit `bun.lock`.
-- **Tooling:** Use Vite+ for the developer workflow, dependency commands, formatting, linting, and checks.
-- **Build pipeline:** Next.js remains responsible for development and production builds. Use script tasks such as `vp run dev` and `vp run build`; do not use Vite as the Next.js application bundler.
+- **Package manager:** Use Bun 1.3.14 for dependency installation and as the entry point for every repository script. Commit `bun.lock` and use frozen installs in CI.
+- **Tooling:** Keep Vite+ as the implementation dependency that provides formatting, linting, and test binaries, but invoke those tools only through Bun-backed `package.json` scripts.
+- **Build pipeline:** Next.js remains responsible for development and production builds. Use script tasks such as `bun run dev` and `bun run build`; do not use Vite as the Next.js application bundler.
 - **Hosting:** Vercel, connected to the Git repository, with preview deployments for branches/pull requests and production deployments from the main branch.
 - **Source and license:** Keep [github.com/JustMarkDev/marco-procopio](https://github.com/JustMarkDev/marco-procopio) fully public under the MIT License. Show the repository as the footer's source-code link.
 - **Domain:** Use the production `*.vercel.app` domain automatically assigned by Vercel; no custom domain is planned. Record the exact assigned production URL after the first deployment and use it for canonical URLs, metadata, sitemap entries, and Open Graph URLs.

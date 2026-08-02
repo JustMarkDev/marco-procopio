@@ -1,0 +1,6 @@
+interface:
+  display_name: "Fix Release"
+  short_description: "Repair failed release or deployment runs"
+  default_prompt: "Use $fix-release to repair the failed release or deployment workflow."
+policy:
+  allow_implicit_invocation: false

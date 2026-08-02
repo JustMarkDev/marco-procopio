@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Fix Loop"
+  short_description: "Review, repair, and verify MAR work"
+  default_prompt: "Use $review-fix-loop to review and repair the current MAR implementation."
