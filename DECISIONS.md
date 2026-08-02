@@ -16,7 +16,7 @@ This document records the agreed direction for Marco Procopio's portfolio and th
 
 - **Language:** TypeScript in strict mode.
 - **Framework:** Next.js using the App Router and React Server Components by default.
-- **Package manager:** Bun, with the Bun version pinned in `package.json` and `bun.lock` committed.
+- **Package manager:** Bun, always using the latest stable release rather than pinning a Bun version. Commit `bun.lock`.
 - **Tooling:** Use Vite+ for the developer workflow, dependency commands, formatting, linting, and checks.
 - **Build pipeline:** Next.js remains responsible for development and production builds. Use script tasks such as `vp run dev` and `vp run build`; do not use Vite as the Next.js application bundler.
 - **Hosting:** Vercel, connected to the Git repository, with preview deployments for branches/pull requests and production deployments from the main branch.
@@ -24,13 +24,13 @@ This document records the agreed direction for Marco Procopio's portfolio and th
 - **Domain:** Use the production `*.vercel.app` domain automatically assigned by Vercel; no custom domain is planned. Record the exact assigned production URL after the first deployment and use it for canonical URLs, metadata, sitemap entries, and Open Graph URLs.
 - **Rendering:** Prefer static generation. Add server-side rendering, APIs, a database, or a CMS only when a content requirement needs them.
 - **Content storage:** Keep portfolio content and both translation dictionaries in the repository. Do not add a CMS unless editing requirements materially change.
-- **Styling:** Use Tailwind CSS, supplemented by CSS custom properties for design tokens. Avoid a large component library for this bespoke design.
+- **Styling:** Use Tailwind CSS.
 - **Components:** Use shadcn/ui as a source-owned component foundation, using its current Base UI default and React Server Component support. Add only the primitives the portfolio needs, keep their source in the repository, and restyle them to match the supplied design rather than retaining the stock appearance. Configure shadcn to use Hugeicons.
 - **Theme:** Use `next-themes` with three user-facing choices: System, Light, and Dark. System is the initial default and follows `prefers-color-scheme`; an explicit Light or Dark choice overrides the system and persists across visits. Both themes use semantic CSS variables, and theme initialization must not visibly flash the wrong theme.
 - **Languages:** Publish complete Italian (`it`) and English (`en`) versions under locale-prefixed routes such as `/it` and `/en`. On an initial unprefixed visit, use a saved language override first; otherwise choose Italian only when Vercel's country header is `IT`, and choose English for every other or unknown country. A language selection persists in a preference cookie and redirects to the equivalent page in the chosen locale.
 - **International SEO:** Each localized page declares the correct HTML `lang`, canonical URL, and `hreflang` alternatives. Both locale trees appear in the sitemap. The locale in the URL is authoritative and must not be silently changed after navigation.
 - **Navigation:** Use native hash links for page sections, account for the sticky header when scrolling, and preserve the current section hash when switching between `/it` and `/en` where the section exists in both languages. Smooth scrolling and animated section transitions must respect reduced-motion preferences.
-- **Typography:** Use the supplied self-hosted Geist Pixel files. `GeistPixelSquare` is the primary interface and body typeface because it is the variant used by the design; the other supplied Geist Pixel variants may be used sparingly for intentional accents. Define the font through `next/font/local` and provide an appropriate system fallback.
+- **Typography:** Use Geist Pixel. `GeistPixelSquare` is the primary interface and body typeface because it is the variant used by the design;
 - **Assets:** Use `next/image` for raster images and self-host the supplied fonts. Preserve image licenses and attribution where required.
 - **Animation:** Use Motion for React (`motion`, imported from `motion/react`) for intentional interface and page animations. Prefer CSS for trivial transitions, keep animation components isolated as client components, and configure Motion to respect the user's reduced-motion preference. Derive the exact motion character during implementation from the supplied design; it is not a separate upfront decision.
 - **Icons:** Use the maintained Hugeicons React renderer (`@hugeicons/react`) with the free Stroke Rounded pack (`@hugeicons/core-free-icons`). Import icons individually, use `currentColor`, and wrap the renderer in a small project-level `Icon` component for consistent sizing, stroke width, and accessibility.
@@ -49,14 +49,3 @@ This document records the agreed direction for Marco Procopio's portfolio and th
 - Automated checks for formatting, linting, types, and production build. Add focused tests for interactive behavior rather than testing static markup exhaustively.
 - No secrets in the repository. Environment variables are documented in `.env.example` if any are introduced.
 - Support current evergreen releases of Chrome, Edge, Firefox, and Safari. No legacy-browser compatibility layer is planned.
-
-## Still to decide
-
-These decisions depend on the content or desired behavior and should be answered before their related feature is built:
-
-- **Projects:** Final selection, ordering, translated descriptions, imagery, and which discovered live demos should be featured.
-- **Legal:** Required privacy notice, cookie notice, image/font licenses, and attribution.
-
-## Initial implementation defaults
-
-Unless a later content or design decision contradicts them, implementation will use one Next.js app, repository-managed content, static rendering, no database, no CMS, no authentication, and no contact form. These defaults are deliberately easy to change.
