@@ -1,12 +1,17 @@
 /** @vitest-environment jsdom */
 
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PageViewCounter } from "./page-view-counter";
 
 const fetchMock = vi.fn<typeof fetch>();
 
+beforeEach(() => {
+  vi.spyOn(console, "error").mockImplementation(() => undefined);
+});
+
 afterEach(() => {
+  expect(console.error).not.toHaveBeenCalled();
   cleanup();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
@@ -43,18 +48,15 @@ describe("PageViewCounter", () => {
     ],
     ["the request fails", () => fetchMock.mockRejectedValue(new Error("offline"))],
   ])("silently keeps the placeholder when %s", async (_scenario, arrangeFailure) => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     arrangeFailure();
 
     renderCounter();
     await waitForRequestToSettle();
 
     expect(screen.getByText("—")).toBeTruthy();
-    expect(consoleError).not.toHaveBeenCalled();
   });
 
   it("aborts the request on unmount without logging", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     fetchMock.mockImplementation(
       (_input, init) =>
         new Promise((_resolve, reject) => {
@@ -68,7 +70,5 @@ describe("PageViewCounter", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
     unmount();
     await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(consoleError).not.toHaveBeenCalled();
   });
 });
