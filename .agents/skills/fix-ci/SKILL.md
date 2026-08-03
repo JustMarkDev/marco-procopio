@@ -22,7 +22,7 @@ Repair its existing branch, run focused and applicable checks, commit the repair
 
 ## Failure on main
 
-Create a MAR repair issue in `In Progress`, create `fix/MAR-XYZ-ci-short-description`, repair and test, then run `/review-fix-loop` and `/prepare-pr`. The original `/fix-ci` invocation authorizes squash-merging this repair PR after review and required checks pass. Move the repair issue to `Done`.
+Create a MAR repair issue in the active implementation state configured in `docs/agents/issue-tracker.md`, create `fix/MAR-XYZ-ci-short-description`, repair and test, then run `/review-fix-loop` and `/prepare-pr`. The original `/fix-ci` invocation authorizes squash-merging this repair PR after review and required checks pass. Move the repair issue to the configured completed state.
 
 ## Vercel deployment failure
 

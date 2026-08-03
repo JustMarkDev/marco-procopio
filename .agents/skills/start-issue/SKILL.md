@@ -10,7 +10,7 @@ Prepare and implement an approved MAR issue without modifying or copying globall
 ## Establish the work
 
 1. Fetch the complete Linear issue and verify its identifier belongs to team `MAR`.
-2. Require `Todo` (the MAR team's Ready gate) unless the user explicitly authorized another state.
+2. Require the approved implementation state configured in `docs/agents/issue-tracker.md`, unless the user explicitly authorized another state.
 3. Require a clear problem statement and testable acceptance criteria.
 4. Read `AGENTS.md`, `docs/agents/*.md`, relevant domain docs, ADRs, and linked material.
 5. Treat issue-defined test seams as pre-approved. If suitable seams are absent, confirm them before using `/tdd`.
@@ -22,7 +22,7 @@ Ask before proceeding only when a missing decision changes product behavior, sec
 - Verify the worktree can be used without disturbing unrelated changes.
 - Update `main` with `git pull --ff-only`; never discard local work.
 - Create a branch containing the issue identifier with the appropriate `feat/`, `fix/`, or `refactor/` prefix.
-- Move the issue to `In Progress` and post one concise plan covering code areas, approach, tests, and material risks.
+- Move the issue to the configured active implementation state and post one concise plan covering code areas, approach, tests, and material risks.
 
 ## Implement and verify
 

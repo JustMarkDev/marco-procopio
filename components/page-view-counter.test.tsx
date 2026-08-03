@@ -36,20 +36,15 @@ describe("PageViewCounter", () => {
     expect(await screen.findByText("1,234")).toBeTruthy();
   });
 
-  it("silently keeps the placeholder when the response is not successful", async () => {
+  it.each([
+    [
+      "the response is not successful",
+      () => fetchMock.mockResolvedValue({ ok: false } as Response),
+    ],
+    ["the request fails", () => fetchMock.mockRejectedValue(new Error("offline"))],
+  ])("silently keeps the placeholder when %s", async (_scenario, arrangeFailure) => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    fetchMock.mockResolvedValue({ ok: false } as Response);
-
-    renderCounter();
-    await waitForRequestToSettle();
-
-    expect(screen.getByText("—")).toBeTruthy();
-    expect(consoleError).not.toHaveBeenCalled();
-  });
-
-  it("silently keeps the placeholder when the request fails", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    fetchMock.mockRejectedValue(new Error("offline"));
+    arrangeFailure();
 
     renderCounter();
     await waitForRequestToSettle();

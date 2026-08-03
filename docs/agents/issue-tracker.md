@@ -10,12 +10,14 @@ Issues and specifications for this repository live in Linear.
 ## Workflow
 
 ```text
-Backlog -> Todo (Ready) -> In Progress -> In Review -> Done (Merged)
+Backlog -> Todo -> In Progress -> In Review -> Done
 ```
 
-`Todo` is the team's Ready gate: it means a human has approved the issue for implementation. Normal implementation may begin only from `Todo` unless the user explicitly authorizes another starting state.
+`Todo` means a human has approved the issue for implementation. Normal implementation may begin only from `Todo` unless the user explicitly authorizes another starting state.
 
-`Done` is the team's Merged state. Do not silently substitute other state names. If the MAR workflow changes, ask the user how to map it before changing issue state.
+`Done` means the associated work has been merged or otherwise completed. Do not silently substitute other state names. If the MAR workflow changes, ask the user before changing this file.
+
+This file is the canonical source for Linear state names. Lifecycle skills must read the required state from this workflow instead of defining state names or aliases locally.
 
 ## Conventions
 
@@ -30,4 +32,4 @@ GitHub is authoritative for pull requests, CI, releases, and tags. Vercel is aut
 
 - "Publish to the issue tracker" means create an issue in Linear team `MAR`.
 - "Fetch the relevant ticket" means fetch the full Linear issue and its comments.
-- "Ready for implementation" maps to the `Todo` state and `ready-for-agent` triage label.
+- "Approved for implementation" maps to `Todo` and the `ready-for-agent` triage label.
