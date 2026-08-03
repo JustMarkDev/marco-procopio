@@ -16,7 +16,7 @@ This document records the agreed direction for Marco Procopio's portfolio and th
 
 - **Language:** TypeScript in strict mode.
 - **Framework:** Next.js using the App Router and React Server Components by default.
-- **Package manager:** Use Bun 1.3.14 for dependency installation and as the entry point for every repository script. Commit `bun.lock` and use frozen installs in CI.
+- **Package manager:** Always use the latest stable Bun release for dependency installation and as the entry point for every repository script. CI resolves the `latest` stable channel. Commit `bun.lock` and use frozen installs in CI; pin Bun only if the latest channel becomes unsupported.
 - **Tooling:** Keep Vite+ as the implementation dependency that provides formatting, linting, and test binaries, but invoke those tools only through Bun-backed `package.json` scripts.
 - **Build pipeline:** Next.js remains responsible for development and production builds. Use script tasks such as `bun run dev` and `bun run build`; do not use Vite as the Next.js application bundler.
 - **Hosting:** Vercel, connected to the Git repository, with preview deployments for branches/pull requests and production deployments from the main branch.

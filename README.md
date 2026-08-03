@@ -4,7 +4,7 @@ A fast, bilingual personal portfolio built with Next.js, TypeScript, Tailwind CS
 
 ## Local development
 
-Install Bun 1.3.14, then run:
+Install the latest stable Bun release, then run:
 
 ```bash
 bun install --frozen-lockfile

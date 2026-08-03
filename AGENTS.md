@@ -71,4 +71,4 @@ Normal feature work requires human authorization when:
 3. resolving genuine product ambiguity;
 4. merging the final pull request.
 
-Explicitly invoking `/fix-ci` or `/fix-release` authorizes routine diagnosis, repair changes, commits, pushes, reruns, and repair pull requests without intermediate confirmation. A repair skill may merge its own repair PR when its documented gates pass. Stop for a product decision, destructive data change, new secret or credential, broader permission, bypassed security control, or security-sensitive architectural decision.
+Explicitly invoking `/fix-ci` for CI, release, or deployment repair authorizes routine diagnosis, repair changes, commits, pushes, reruns, and repair pull requests without intermediate confirmation. The repair skill may merge its own repair PR when its documented gates pass. Stop for a product decision, destructive data change, new secret or credential, broader permission, bypassed security control, or security-sensitive architectural decision.

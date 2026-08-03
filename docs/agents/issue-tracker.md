@@ -10,12 +10,12 @@ Issues and specifications for this repository live in Linear.
 ## Workflow
 
 ```text
-Backlog -> Ready -> In Progress -> In Review -> Merged
+Backlog -> Todo (Ready) -> In Progress -> In Review -> Done (Merged)
 ```
 
-`Ready` means a human has approved the issue for implementation. Normal implementation may begin only from `Ready` unless the user explicitly authorizes another starting state.
+`Todo` is the team's Ready gate: it means a human has approved the issue for implementation. Normal implementation may begin only from `Todo` unless the user explicitly authorizes another starting state.
 
-Do not silently substitute differently named states. If the MAR team does not expose one of these states, ask the user how to map it before changing issue state.
+`Done` is the team's Merged state. Do not silently substitute other state names. If the MAR workflow changes, ask the user how to map it before changing issue state.
 
 ## Conventions
 
@@ -24,10 +24,10 @@ Do not silently substitute differently named states. If the MAR team does not ex
 - Link the pull request to the Linear issue.
 - Let the Linear GitHub integration perform transitions when configured; do not duplicate a transition that already occurred.
 
-GitHub is authoritative for pull requests, CI, releases, tags, and deployments. Linear Releases is not used.
+GitHub is authoritative for pull requests, CI, releases, and tags. Vercel is authoritative for this website's deployments. For a non-website repository, use its documented deployment system, defaulting to GitHub Actions when none is specified. Linear Releases is not used.
 
 ## Skill operations
 
 - "Publish to the issue tracker" means create an issue in Linear team `MAR`.
 - "Fetch the relevant ticket" means fetch the full Linear issue and its comments.
-- "Ready for implementation" maps to the `Ready` state and `ready-for-agent` triage label.
+- "Ready for implementation" maps to the `Todo` state and `ready-for-agent` triage label.

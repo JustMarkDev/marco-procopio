@@ -10,7 +10,7 @@ Prepare and implement an approved MAR issue without modifying or copying globall
 ## Establish the work
 
 1. Fetch the complete Linear issue and verify its identifier belongs to team `MAR`.
-2. Require `Ready` unless the user explicitly authorized another state.
+2. Require `Todo` (the MAR team's Ready gate) unless the user explicitly authorized another state.
 3. Require a clear problem statement and testable acceptance criteria.
 4. Read `AGENTS.md`, `docs/agents/*.md`, relevant domain docs, ADRs, and linked material.
 5. Treat issue-defined test seams as pre-approved. If suitable seams are absent, confirm them before using `/tdd`.
