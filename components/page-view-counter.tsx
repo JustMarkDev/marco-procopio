@@ -27,13 +27,14 @@ export function PageViewCounter({ label, locale }: PageViewCounterProps) {
       signal: controller.signal,
     })
       .then((response) => {
-        if (!response.ok) throw new Error("Unable to record page view");
+        if (!response.ok) return null;
         return response.json() as Promise<{ count: number }>;
       })
-      .then(({ count: nextCount }) => setCount(nextCount))
+      .then((payload) => {
+        if (payload) setCount(payload.count);
+      })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
-        console.error(error);
       });
 
     return () => controller.abort();

@@ -4,11 +4,11 @@ A fast, bilingual personal portfolio built with Next.js, TypeScript, Tailwind CS
 
 ## Local development
 
-Install the latest stable Bun and Vite+, then run:
+Install the latest stable Bun release, then run:
 
 ```bash
-vp install
-vp run dev
+bun install --frozen-lockfile
+bun run dev
 ```
 
 Open `http://localhost:3000`. The unprefixed route selects Italian for visitors whose Vercel country header is `IT`, and English otherwise. A saved language preference takes precedence.
@@ -16,9 +16,9 @@ Open `http://localhost:3000`. The unprefixed route selects Italian for visitors 
 Useful checks:
 
 ```bash
-vp check
-vp run typecheck
-vp run build
+bun run check
+bun run test
+bun run build
 ```
 
 ## Deployment

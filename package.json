@@ -10,7 +10,8 @@
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "typecheck": "tsc --noEmit",
-    "check": "vp run format:check && vp run lint && vp run typecheck"
+    "test": "vitest run",
+    "check": "bun run format:check && bun run lint && bun run typecheck"
   },
   "dependencies": {
     "@base-ui/react": "latest",
@@ -26,9 +27,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "jsdom": "^30.0.1",
     "tailwindcss": "latest",
     "tw-animate-css": "latest",
     "typescript": "latest",
@@ -36,12 +39,5 @@
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@latest"
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "bun",
-      "version": "1.3.14",
-      "onFail": "download"
-    }
   }
 }

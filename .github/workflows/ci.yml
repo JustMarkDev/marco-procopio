@@ -13,11 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: "24"
-          cache: true
-      - run: vp install --frozen-lockfile
-      - run: vp check
-      - run: vp run typecheck
-      - run: vp run build
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun run test
+      - run: bun run build
