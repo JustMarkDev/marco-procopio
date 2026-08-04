@@ -820,6 +820,86 @@ summary,
   line-height: 1.45;
 }
 
+.not-found-backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0.78;
+  background-color: var(--background);
+  /* Replace this generated fallback with the supplied pixel-art asset when it is ready. */
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--border) 38%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border) 38%, transparent) 1px, transparent 1px),
+    radial-gradient(
+      circle at 50% 48%,
+      color-mix(in srgb, var(--accent) 16%, transparent),
+      transparent 42%
+    );
+  background-position: center;
+  background-size:
+    16px 16px,
+    16px 16px,
+    100% 100%;
+  image-rendering: pixelated;
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+.not-found-code {
+  margin: 0;
+  color: var(--foreground);
+  font-family: "Geist Pixel Square", ui-monospace, monospace;
+  font-size: clamp(9rem, 34vw, 25rem);
+  font-weight: 500;
+  letter-spacing: -0.1em;
+  line-height: 0.62;
+  text-indent: -0.1em;
+  text-shadow:
+    4px 4px 0 var(--background),
+    8px 8px 0 color-mix(in srgb, var(--accent) 72%, var(--foreground));
+}
+
+.not-found-link {
+  display: inline-flex;
+  box-shadow:
+    4px 4px 0 color-mix(in srgb, var(--foreground) 18%, transparent),
+    inset 0 1px 0 var(--glass-edge);
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease,
+    translate 150ms ease;
+}
+
+.not-found-link:hover {
+  translate: 0 -2px;
+  background: var(--surface-solid);
+  box-shadow:
+    4px 6px 0 color-mix(in srgb, var(--foreground) 22%, transparent),
+    inset 0 1px 0 var(--glass-edge);
+}
+
+.not-found-link:active {
+  translate: 0 1px;
+  box-shadow:
+    2px 2px 0 color-mix(in srgb, var(--foreground) 20%, transparent),
+    inset 0 1px 0 var(--glass-edge);
+}
+
+.not-found-copy-it {
+  display: none;
+}
+
+:lang(it) .not-found-copy-en {
+  display: none;
+}
+
+:lang(it) p.not-found-copy-it {
+  display: block;
+}
+
+:lang(it) a.not-found-copy-it {
+  display: inline-flex;
+}
+
 @media (max-width: 720px) {
   .nav-links {
     gap: 15px;
@@ -960,6 +1040,13 @@ summary,
 
   .site-footer > span {
     max-width: 130px;
+  }
+
+  .not-found-code {
+    font-size: clamp(8.5rem, 44vw, 12rem);
+    text-shadow:
+      3px 3px 0 var(--background),
+      6px 6px 0 color-mix(in srgb, var(--accent) 72%, var(--foreground));
   }
 }
 
