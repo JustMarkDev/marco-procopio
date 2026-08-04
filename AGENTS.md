@@ -42,6 +42,19 @@ Use the global skills when appropriate, including:
 - `/code-review`
 - `/resolving-merge-conflicts`
 
+## Delivery lifecycle
+
+Follow this lifecycle:
+
+```text
+idea -> local issue -> implementation and review -> draft PR -> CI -> authorized squash merge -> release or deployment
+```
+
+- For an unshaped idea, use `/grill-with-docs`, `/to-spec`, and `/to-tickets` as appropriate. Record accepted work with the configured local issue tooling. Do not begin implementation until the user approves the issue and explicitly starts it.
+- After the implementation and CI gates pass, report the draft PR as ready. Do not merge until the user explicitly authorizes it.
+- After authorization, recheck the reviewed head, required checks, conflicts, and PR title, then squash merge without bypassing protection.
+- After merge, verify the configured release or deployment path. For this website, Vercel deploys `main`; monitor that deployment and use the same diagnosis-and-repair principles for routine failures. Create GitHub tags or releases only when the repository's release configuration or the user calls for them.
+
 ## Controlled implementation loop
 
 Once the user approves a local issue and explicitly starts implementation, continue routine work without requesting confirmation between steps:
