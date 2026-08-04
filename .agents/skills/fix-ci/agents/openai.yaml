@@ -1,6 +1,0 @@
-interface:
-  display_name: "Fix CI"
-  short_description: "Repair failed CI, releases, or deployments"
-  default_prompt: "Use $fix-ci to diagnose and repair the failed CI, release, or deployment."
-policy:
-  allow_implicit_invocation: false

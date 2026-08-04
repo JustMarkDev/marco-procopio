@@ -1,6 +1,0 @@
-interface:
-  display_name: "Merge Pull Request"
-  short_description: "Squash-merge an authorized MAR PR"
-  default_prompt: "Use $merge-pr to perform the authorized squash merge."
-policy:
-  allow_implicit_invocation: false

@@ -19,21 +19,15 @@ Typical checks are:
 
 Run `bun run check` when the combined formatting, lint, and typecheck gate is appropriate. Run `bun run test:e2e` only if that script is added later.
 
-## Agent skills
+## Work source
 
-### Issue tracker
+Implementation work is specified by repository-local issue files. Treat the active local issue as the source of truth for scope, acceptance criteria, testing seams, and completion.
 
-Implementation work is tracked in Linear team `MAR`. See `docs/agents/issue-tracker.md`.
+The local issue system and synchronization with GitHub will be configured separately. When its repository instructions exist, follow them. Until then, ask the user to identify the approved local issue before starting implementation. Do not create or update an external issue tracker unless the user asks. Treat synchronized GitHub Issues as mirrors unless the local issue configuration explicitly says otherwise.
 
-### Triage labels
+Before exploring or changing the codebase, read the active local issue, `docs/agents/domain.md`, `DECISIONS.md`, and any relevant context files or ADRs.
 
-Use the canonical Matt Pocock triage vocabulary. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-This is a single-context repository. See `docs/agents/domain.md` before exploring or changing the codebase.
-
-### Skill ownership
+## Global engineering skills
 
 Matt Pocock engineering skills are installed globally and are upstream-owned dependencies. Never modify them, copy customized versions into this repository, or create project-local forks.
 
@@ -48,27 +42,49 @@ Use the global skills when appropriate, including:
 - `/code-review`
 - `/resolving-merge-conflicts`
 
-Project lifecycle skills live under `.agents/skills/`. They may orchestrate global skills but must not reproduce or alter their engineering methods.
+## Controlled implementation loop
 
-## Git and pull requests
+Once the user approves a local issue and explicitly starts implementation, continue routine work without requesting confirmation between steps:
+
+1. Read the complete issue and relevant repository context.
+2. Plan the smallest testable slices that satisfy its acceptance criteria.
+3. For each behavioral slice, apply `/tdd`: add or update a failing test, confirm the intended failure, implement the smallest correct change, and verify the test passes.
+4. Run focused checks while developing.
+5. Review the complete branch diff against the local issue and repository standards with `/code-review`.
+6. Fix substantive findings, rerun focused checks, and review again.
+7. Run every applicable repository check before publishing.
+8. Commit intentionally, push the feature branch, and open or update a draft pull request.
+
+Perform at most three full review-and-repair cycles. A cycle may contain as many small TDD iterations as the approved acceptance criteria require. When a selected global skill explicitly calls for independent subagents and they are available, use them for isolated review or diagnosis; the main agent remains responsible for integrating their findings.
+
+The implementation gate passes only when the acceptance criteria are satisfied, no unresolved substantive review findings remain, all applicable checks pass, and the diff contains no unexplained scope changes.
+
+## Pull request and CI loop
+
+After pushing, inspect the actual GitHub check results. For routine failures:
+
+1. Read the failing logs.
+2. Reproduce locally when practical.
+3. Apply `/diagnosing-bugs` and `/tdd` when behavior changes.
+4. Make the smallest correct repair.
+5. Rerun focused and complete applicable checks.
+6. Review non-trivial repairs, commit, push, and monitor the new run.
+
+Perform at most three substantive CI repair cycles. Never disable required checks, weaken valid tests, add blanket ignores, bypass protections, or push directly to `main`.
+
+## Git, pull requests, and releases
 
 - Never push directly to `main`.
-- Use `feat/MAR-123-short-description`, `fix/MAR-123-short-description`, or `refactor/MAR-123-short-description` branches.
-- Use Conventional Commit pull request titles ending in the Linear identifier, for example `feat(projects): add technology filtering (MAR-123)`.
-- Squash merge. Preserve the PR title as the squash commit title.
+- When the local issue system provides an identifier or slug, include it in the branch name and PR body.
+- Use Conventional Commit pull request titles.
+- Open pull requests as drafts until implementation, review, and CI gates pass.
+- Squash merge and preserve the PR title as the squash commit title.
 - Never bypass branch protection or required checks.
+- GitHub is authoritative for pull requests, CI, tags, releases, and non-website deployments.
+- Vercel is authoritative for this website's deployments.
 
-## Testing seams
+## Human authorization and stop conditions
 
-The test strategy and public seams documented in an approved Linear issue count as the confirmation required by the global `/tdd` skill. If the issue does not identify suitable seams, confirm them with the user before writing tests.
+Human authorization is required to approve the local issue, start implementation, resolve genuine ambiguity, and merge the final pull request. Starting implementation authorizes routine edits, tests, reviews, repairs, commits, feature-branch pushes, draft PR updates, and CI repair within the approved scope.
 
-## Human authorization
-
-Normal feature work requires human authorization when:
-
-1. approving the Linear issue;
-2. starting implementation;
-3. resolving genuine product ambiguity;
-4. merging the final pull request.
-
-Explicitly invoking `/fix-ci` for CI, release, or deployment repair authorizes routine diagnosis, repair changes, commits, pushes, reruns, and repair pull requests without intermediate confirmation. The repair skill may merge its own repair PR when its documented gates pass. Stop for a product decision, destructive data change, new secret or credential, broader permission, bypassed security control, or security-sensitive architectural decision.
+Stop and ask the user when work requires a product or public API decision, scope expansion, destructive data change, new credential or secret, broader permission, bypassed security control, security-sensitive architectural decision, or when the same blocking failure persists through three repair cycles.

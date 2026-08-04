@@ -1,4 +1,0 @@
-interface:
-  display_name: "Prepare Pull Request"
-  short_description: "Open a reviewed MAR pull request"
-  default_prompt: "Use $prepare-pr to verify and open a draft PR for the current MAR issue."
