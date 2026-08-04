@@ -27,6 +27,20 @@ The local issue system and synchronization with GitHub will be configured separa
 
 Before exploring or changing the codebase, read the active local issue, `docs/agents/domain.md`, `DECISIONS.md`, and any relevant context files or ADRs.
 
+## Agent skills
+
+### Issue tracker
+
+Issues and specs are tracked as local Markdown under `.scratch/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Triage uses the default vocabulary with `needs-approval` for work awaiting maintainer approval. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This repository uses the single-context layout. See `docs/agents/domain.md`.
+
 ## Global engineering skills
 
 Matt Pocock engineering skills are installed globally and are upstream-owned dependencies. Never modify them, copy customized versions into this repository, or create project-local forks.
