@@ -1,91 +1,27 @@
-# my-better-t-app
+# marco-procopio
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Self, and more.
+Personal portfolio of Marco Procopio, built with Next.js 16, Tailwind CSS v4, Motion and Effect.
+English lives at `/`, Italian at `/it`.
 
-## Features
-
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Vite+** - Unified Vite toolchain, workspace task runner, linting, and formatting
-
-## Getting Started
-
-First, install the dependencies:
+## Develop
 
 ```bash
 bun install
+bun run dev        # http://localhost:3001
+bun run check      # format, lint, type-check
+bun run build
+bun run --cwd apps/web test:e2e   # Playwright smoke test (starts the dev server if needed)
 ```
 
-Then, run the development server:
+## Where things are
 
-```bash
-bun run dev
-```
+- `apps/web/src/lib/content.ts`: all copy (both languages), projects, links.
+- `apps/web/src/lib/github.ts`: Effect program that fetches repo activity from GitHub, with retries and a fallback.
+- `apps/web/src/components/dither.tsx`: WebGL dither shader for the background and the project images.
+- `apps/web/src/components/nav.tsx`: docked/detached nav, theme switch, language switch.
+- `apps/web/public/work/`: project screenshots. `public/Marco-Procopio-CV.pdf`: downloadable CV.
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+## Environment
 
-## UI Customization
-
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@my-better-t-app/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Environment Configuration
-
-Each app owns its environment schema in `.env.schema`. Varlock generates `src/env.ts` during installation; run `bun run env:generate` after changing a schema. Commit schemas, and keep secrets in ignored env files or your deployment platform.
-
-Import the generated `ENV` accessor in application code. Shared database and auth packages receive configuration or initialized clients from the application. See [Varlock's monorepo guide](https://varlock.dev/guides/monorepos/).
-
-Bun's automatic env loading is disabled in `bunfig.toml`; the framework integration or server bootstrap loads Varlock. Node deployments must include Varlock and its dependencies alongside the app schema.
-
-Run standalone Node/Bun tools that use Varlock from the owning app directory so they load that app's schema and env files. `env:generate` only generates TypeScript files; it does not initialize environment values in a subsequent command.
-
-## Git Hooks and Formatting
-
-- Optional native Vite+ hooks: `bun run hooks:setup`
-- Docs: [Vite+ commit hooks](https://viteplus.dev/guide/commit-hooks)
-- Run checks: `bun run check`
-
-## Project Structure
-
-```
-my-better-t-app/
-├── apps/
-│   └── web/         # Fullstack application (Next.js)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run check`: Run Vite+ format/lint checks and workspace TypeScript checks
-- `bun run lint`: Run Vite+ lint checks
-- `bun run format`: Run Vite+ formatting
-- `bun run staged`: Run Vite+ checks against staged files
-- `bun run hooks:setup`: Install Vite+ native Git hooks with `vp config`
+`GITHUB_TOKEN` (optional) raises the GitHub API rate limit for the repo activity fetch.
+The schema is in `apps/web/.env.schema` (managed by varlock).

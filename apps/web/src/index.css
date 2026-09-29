@@ -1,1 +1,246 @@
-@import "@my-better-t-app/ui/globals.css";
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens.
+ * Color: zinc neutrals, one orange accent (dither art, focus ring, selection).
+ * Type: Geist / Geist Mono; sizes from Tailwind's scale (sm, base, lg, 4xl, 5xl).
+ * Spacing: Tailwind 4px scale. Sections py-12 / md:py-16.
+ * Radius: full pill for interactive elements, 3xl (24px) for panels, 2xl for inset media and rows.
+ * Elevation: one level, the .glass surface.
+ * Motion: fast 150ms for color, 800ms reveal, ease-out-expo; springs for press/hover.
+ */
+:root {
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --muted-foreground: #52525b;
+  --border: #e4e4e7;
+  --ring: #ea580c;
+  --dither-bg: #f4f4f5;
+  --dither-fg: #d4d4d8;
+  --dither-accent: #fdba74;
+  --glass-fill: rgb(250 250 250 / 0.8);
+}
+
+.dark {
+  --background: #0c0c0e;
+  --foreground: #f4f4f5;
+  --muted-foreground: #a1a1aa;
+  --border: #27272a;
+  --ring: #fb923c;
+  --dither-bg: #0c0c0e;
+  --dither-fg: #27272a;
+  --dither-accent: #7c2d12;
+  --glass-fill: rgb(36 36 40 / 0.8);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  /* Background on <html> only: a body background would paint over the fixed dither canvas. */
+  html {
+    background: var(--background);
+  }
+  body {
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+}
+
+::selection {
+  background: color-mix(in oklab, var(--ring) 30%, transparent);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.reveal {
+  animation: reveal 0.8s var(--ease-out-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+  }
+}
+
+/* Theme switch: the nav toggle animates a circular clip on the new snapshot. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+/*
+ * Web approximation of Apple's Liquid Glass (not an official Apple material):
+ * blurred backdrop, gradient tint, light edge highlights.
+ */
+.glass {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.4));
+  border: 1px solid rgb(255 255 255 / 0.7);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    inset 0 -1px 0 rgb(255 255 255 / 0.25),
+    0 10px 30px -12px rgb(24 24 27 / 0.18);
+}
+
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(120% 60% at 20% 0%, rgb(255 255 255 / 0.5), transparent 60%);
+  pointer-events: none;
+}
+
+.dark .glass {
+  background: linear-gradient(135deg, rgb(39 39 42 / 0.72), rgb(24 24 27 / 0.55));
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    inset 0 -1px 0 rgb(255 255 255 / 0.04),
+    0 10px 30px -12px rgb(0 0 0 / 0.6);
+}
+
+.dark .glass::before {
+  background: radial-gradient(120% 60% at 20% 0%, rgb(255 255 255 / 0.07), transparent 60%);
+}
+
+/*
+ * Large panels (cards, frames): same look as .glass but without a live backdrop blur.
+ * Blurring big areas over the animated background every frame is what makes scrolling lag.
+ */
+.panel {
+  position: relative;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.9), rgb(250 250 250 / 0.82));
+  border: 1px solid rgb(255 255 255 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 10px 30px -12px rgb(24 24 27 / 0.18);
+}
+
+.dark .panel {
+  background: linear-gradient(135deg, rgb(32 32 36 / 0.94), rgb(22 22 25 / 0.9));
+  border-color: rgb(255 255 255 / 0.08);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 10px 30px -12px rgb(0 0 0 / 0.6);
+}
+
+/* Primary action: dark tinted glass in light mode, light tinted glass in dark mode. */
+.glass-primary {
+  color: var(--background);
+  background: linear-gradient(135deg, rgb(24 24 27 / 0.96), rgb(24 24 27 / 0.86));
+  border-color: rgb(24 24 27 / 0.9);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    0 10px 30px -12px rgb(24 24 27 / 0.45);
+}
+
+.glass-primary::before {
+  background: radial-gradient(120% 60% at 20% 0%, rgb(255 255 255 / 0.18), transparent 60%);
+}
+
+.dark .glass-primary {
+  background: linear-gradient(135deg, rgb(244 244 245 / 0.95), rgb(244 244 245 / 0.8));
+  border-color: rgb(255 255 255 / 0.9);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 10px 30px -12px rgb(0 0 0 / 0.6);
+}
+
+.dark .glass-primary::before {
+  background: radial-gradient(120% 60% at 20% 0%, rgb(255 255 255 / 0.6), transparent 60%);
+}
+
+/*
+ * Progressive blur under the nav: stacked backdrop blurs, each masked to a
+ * shorter band, so blur strength ramps up towards the top edge.
+ */
+.progressive-blur {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 96px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--background) 70%, transparent),
+    transparent
+  );
+}
+
+.progressive-blur > div {
+  position: absolute;
+  inset: 0;
+}
+
+.progressive-blur > div:nth-child(1) {
+  backdrop-filter: blur(2px);
+  mask-image: linear-gradient(to top, transparent 0%, black 35%);
+}
+.progressive-blur > div:nth-child(2) {
+  backdrop-filter: blur(5px);
+  mask-image: linear-gradient(to top, transparent 30%, black 65%);
+}
+.progressive-blur > div:nth-child(3) {
+  backdrop-filter: blur(10px);
+  mask-image: linear-gradient(to top, transparent 60%, black 90%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--background);
+    backdrop-filter: none;
+  }
+
+  .glass-primary,
+  .dark .glass-primary {
+    background: var(--foreground);
+  }
+
+  .progressive-blur > div {
+    display: none;
+  }
+
+  .panel,
+  .dark .panel {
+    background: var(--background);
+  }
+}

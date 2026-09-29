@@ -7,24 +7,26 @@
     "build": "next build",
     "check-types": "tsc --noEmit",
     "start": "next start",
-    "env:generate": "varlock codegen"
+    "env:generate": "varlock codegen",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@my-better-t-app/ui": "workspace:*",
-    "@swc/helpers": "^0.5.23",
+    "@hugeicons/core-free-icons": "^4.3.5",
+    "@hugeicons/react": "^1.1.10",
     "@varlock/nextjs-integration": "1.2.2",
+    "@vercel/analytics": "^2.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
-    "lucide-react": "catalog:",
+    "effect": "^3.22.2",
+    "motion": "^13.4.4",
     "next": "^16.3.4",
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sonner": "catalog:",
-    "varlock": "catalog:",
-    "zod": "catalog:"
+    "varlock": "catalog:"
   },
   "devDependencies": {
-    "@my-better-t-app/config": "workspace:*",
+    "@marco-procopio/config": "workspace:*",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
