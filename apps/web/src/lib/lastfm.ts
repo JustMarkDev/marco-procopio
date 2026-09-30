@@ -77,9 +77,10 @@ const artwork = (artist: string, name: string): Effect.Effect<Artwork> => {
     }).pipe(Effect.as(found));
   const qs = `api_key=${ENV.LASTFM_API_KEY}&format=json&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(name)}`;
   return fetchJson(`https://ws.audioscrobbler.com/2.0/?method=track.getInfo&${qs}`, TrackInfo).pipe(
-    Effect.map(
-      ({ track }): Artwork => ({ image: large(track.album?.image), album: track.album?.title }),
-    ),
+    Effect.map(({ track }): Artwork => ({
+      image: large(track.album?.image),
+      album: track.album?.title,
+    })),
     // Unknown track: fall back to the artist photo instead of failing.
     Effect.catchAll(() => Effect.succeed<Artwork>({})),
     Effect.flatMap((found) =>

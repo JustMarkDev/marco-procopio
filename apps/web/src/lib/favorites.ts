@@ -94,18 +94,18 @@ const trakt = (kind: "movies" | "shows") =>
             ].slice(0, TOP);
           }
           return shelf.flatMap(({ rating, movie, show }): Favorite[] => {
-              const item = movie ?? show;
-              if (!item) return [];
-              const poster = item.images?.poster?.[0];
-              return [
-                {
-                  title: item.title,
-                  href: `https://trakt.tv/${kind}/${item.ids.slug}`,
-                  image: poster && (poster.startsWith("http") ? poster : `https://${poster}`),
-                  meta: `${rating}/10`,
-                },
-              ];
-            });
+            const item = movie ?? show;
+            if (!item) return [];
+            const poster = item.images?.poster?.[0];
+            return [
+              {
+                title: item.title,
+                href: `https://trakt.tv/${kind}/${item.ids.slug}`,
+                image: poster && (poster.startsWith("http") ? poster : `https://${poster}`),
+                meta: `${rating}/10`,
+              },
+            ];
+          });
         }),
         orElse(`Trakt ${kind}`, []),
       );
