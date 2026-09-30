@@ -1,6 +1,6 @@
 import { Schema } from "effect";
 
-export const SITE_URL = "https://marcoprocopio.vercel.app";
+export const SITE_URL = "https://marco-procopio.vercel.app";
 
 export type Lang = "en" | "it";
 export const langs: Lang[] = ["en", "it"];
