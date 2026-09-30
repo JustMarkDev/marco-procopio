@@ -29,7 +29,9 @@ export function Favorites({
   labels: Dict["shelves"];
   hints: Partial<Record<Shelf, string>>;
 }) {
-  const tabs = shelves.filter((shelf) => !HIDDEN.has(shelf) && (data[shelf].length > 0 || hints[shelf]));
+  const tabs = shelves.filter(
+    (shelf) => !HIDDEN.has(shelf) && (data[shelf].length > 0 || hints[shelf]),
+  );
   const [active, setActive] = useState<Shelf | undefined>(tabs[0]);
   if (!active) return null;
 
