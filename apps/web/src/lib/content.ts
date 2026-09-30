@@ -1,3 +1,5 @@
+import { Schema } from "effect";
+
 export const SITE_URL = "https://marcoprocopio.vercel.app";
 
 export type Lang = "en" | "it";
@@ -17,24 +19,63 @@ export const links = {
   cv: "/Marco-Procopio-CV.pdf",
 };
 
-type Text = Record<Lang, string>;
-
-export type Project = {
-  slug: string;
-  name: string;
-  kind: Text;
-  summary: Text;
-  overview: Text;
-  highlights: Record<Lang, string[]>;
-  stats: { value: string; label: Text }[];
-  stack: string[];
-  image: { src: string; width: number; height: number; alt: Text; note?: Text };
-  /** GitHub repo name under JustMarkDev. Omitted for private repos. */
-  repo?: string;
-  site?: string;
+/** Public profile IDs for the "Off the clock" section. An empty ID hides that source. */
+export const profiles = {
+  lastfm: "JustMark03",
+  /** Trakt's URL slug for "Just Mark". */
+  trakt: "just-mark",
+  anilist: "JustMark25",
+  /** SteamID64, the 17-digit number in the profile URL. */
+  steam: "76561198442990697",
 };
 
-export const projects: Project[] = [
+/** One string per language, neither empty. */
+const Text = Schema.Struct({
+  en: Schema.NonEmptyTrimmedString,
+  it: Schema.NonEmptyTrimmedString,
+}).annotations({ identifier: "Text" });
+
+const ProjectSchema = Schema.Struct({
+  slug: Schema.String.pipe(Schema.pattern(/^[a-z0-9-]+$/)),
+  name: Schema.NonEmptyTrimmedString,
+  kind: Text,
+  summary: Text,
+  overview: Text,
+  highlights: Schema.Struct({
+    en: Schema.NonEmptyArray(Schema.NonEmptyTrimmedString),
+    it: Schema.NonEmptyArray(Schema.NonEmptyTrimmedString),
+  }).pipe(
+    Schema.filter((h) => h.en.length === h.it.length || "en and it highlights differ in count"),
+  ),
+  stats: Schema.Array(Schema.Struct({ value: Schema.NonEmptyTrimmedString, label: Text })),
+  stack: Schema.NonEmptyArray(Schema.NonEmptyTrimmedString),
+  image: Schema.Struct({
+    src: Schema.String.pipe(Schema.startsWith("/work/")),
+    width: Schema.Int,
+    height: Schema.Int,
+    alt: Text,
+    note: Schema.optional(Text),
+  }),
+  /** GitHub repo name under JustMarkDev. Omitted for private repos. */
+  repo: Schema.optional(Schema.String),
+  site: Schema.optional(Schema.String.pipe(Schema.startsWith("https://"))),
+}).annotations({ identifier: "Project" });
+
+export type Project = typeof ProjectSchema.Type;
+
+const Projects = Schema.Array(ProjectSchema)
+  .pipe(
+    Schema.filter(
+      (ps) => new Set(ps.map((p) => p.slug)).size === ps.length || "project slugs must be unique",
+    ),
+  )
+  .annotations({ identifier: "Projects" });
+
+/**
+ * Type-checked against the schema, then decoded when the module loads, so an empty
+ * translation or malformed entry fails `next build` with its exact path.
+ */
+export const projects = Schema.decodeSync(Projects)([
   {
     slug: "database-contatti",
     name: "Database Contatti",
@@ -228,7 +269,7 @@ export const projects: Project[] = [
       },
     },
   },
-];
+]);
 
 export const contributions = [
   {
@@ -288,6 +329,9 @@ export const ui = {
     private: "Private",
     website: "Website",
     updated: "Updated",
+    merged: "Merged",
+    open: "Open",
+    stars: "stars",
     caseStudy: "Case study",
     allWork: "All work",
     whatIBuilt: "What I built",
@@ -295,6 +339,11 @@ export const ui = {
     toLight: "Switch to light theme",
     toDark: "Switch to dark theme",
     otherLang: { label: "IT", name: "Leggi in italiano" },
+    offClock: "Off the clock",
+    offClockIntro: "What I watch, read, play and listen to when I'm not building.",
+    shelves: { films: "Films", series: "Series", anime: "Anime", manga: "Manga", games: "Games" },
+    listeningNow: "Listening now",
+    lastPlayed: "Last played",
   },
   it: {
     locale: "it",
@@ -331,6 +380,9 @@ export const ui = {
     private: "Privato",
     website: "Sito",
     updated: "Aggiornato",
+    merged: "Accettata",
+    open: "Aperta",
+    stars: "stelle",
     caseStudy: "Dettagli",
     allWork: "Tutti i progetti",
     whatIBuilt: "Cosa ho costruito",
@@ -338,6 +390,11 @@ export const ui = {
     toLight: "Passa al tema chiaro",
     toDark: "Passa al tema scuro",
     otherLang: { label: "EN", name: "Read in English" },
+    offClock: "Fuori orario",
+    offClockIntro: "Cosa guardo, leggo, gioco e ascolto quando non sto programmando.",
+    shelves: { films: "Film", series: "Serie TV", anime: "Anime", manga: "Manga", games: "Giochi" },
+    listeningNow: "In ascolto ora",
+    lastPlayed: "Ascoltato",
   },
 } satisfies Record<Lang, unknown>;
 

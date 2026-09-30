@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
+import { LiquidHighlight } from "@/components/liquid-highlight";
 import { home, type Dict, type Lang } from "@/lib/content";
 
 const spring = { type: "spring", stiffness: 420, damping: 22 } as const;
@@ -132,7 +133,7 @@ export function Nav({ lang, t }: { lang: Lang; t: Dict }) {
       </div>
       {/* CSS entrance, so the nav paints before JavaScript loads. */}
       <header className="reveal fixed inset-x-0 top-0 z-50 px-1">
-        <motion.div style={{ y: offset }} className="relative mx-auto max-w-[42.5rem]">
+        <motion.div style={{ y: offset }} className="relative mx-auto max-w-[60.5rem]">
           <motion.svg
             aria-hidden
             viewBox="0 0 100 100"
@@ -158,31 +159,31 @@ export function Nav({ lang, t }: { lang: Lang; t: Dict }) {
               <span className="sm:hidden">MP</span>
               <span className="hidden sm:inline">Marco Procopio</span>
             </Link>
-            <ul className="flex items-center" onPointerLeave={() => setHovered(null)}>
-              {sections.map((s) => (
-                <li key={s.id}>
-                  <a
-                    href={`${linkBase}#${s.id}`}
-                    onPointerEnter={() => setHovered(s.id)}
-                    aria-current={active === s.id ? "location" : undefined}
-                    className={`relative isolate block rounded-full px-3 py-1.5 text-sm transition-colors duration-fast ${
-                      highlight === s.id || active === s.id
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {highlight === s.id && (
-                      <motion.span
-                        layoutId="nav-highlight"
-                        className="absolute inset-0 -z-10 rounded-full bg-foreground/[0.07]"
-                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                      />
-                    )}
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <LiquidHighlight
+              active={highlight}
+              onPointerLeave={() => setHovered(null)}
+              className="flex items-center"
+            >
+              <ul className="flex items-center">
+                {sections.map((s) => (
+                  <li key={s.id}>
+                    <a
+                      href={`${linkBase}#${s.id}`}
+                      data-highlight={s.id}
+                      onPointerEnter={() => setHovered(s.id)}
+                      aria-current={active === s.id ? "location" : undefined}
+                      className={`relative block rounded-full px-3 py-1.5 text-sm transition-colors duration-fast ${
+                        highlight === s.id || active === s.id
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </LiquidHighlight>
             <Link
               href={otherLang as Route}
               hrefLang={lang === "en" ? "it" : "en"}

@@ -8,6 +8,7 @@ import { SITE_URL, ui, type Lang } from "@/lib/content";
 import { Dither } from "./dither";
 import { Nav } from "./nav";
 import Providers from "./providers";
+import { SocialDock } from "./social-dock";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,8 +48,14 @@ export function SiteShell({ lang, children }: { lang: Lang; children: React.Reac
           <Dither />
           <Nav lang={lang} t={ui[lang]} />
           {children}
-          <footer className="mx-auto max-w-2xl px-5 pb-10 text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Marco Procopio
+          <footer id="contact" className="mx-auto max-w-[60rem] scroll-mt-24 px-5 pt-8 pb-10">
+            <div className="flex flex-col gap-8 border-t pt-10 sm:flex-row sm:items-end sm:justify-between">
+              <div className="text-sm text-muted-foreground">
+                <p className="max-w-sm leading-relaxed">{ui[lang].contactText}</p>
+                <p className="mt-4">© {new Date().getFullYear()} Marco Procopio</p>
+              </div>
+              <SocialDock copyLabel={ui[lang].copyEmail} copiedLabel={ui[lang].copied} />
+            </div>
           </footer>
         </Providers>
         <Analytics />

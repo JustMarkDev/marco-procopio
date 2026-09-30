@@ -1,9 +1,7 @@
 "use client";
 
-import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
 export const ease = [0.16, 1, 0.3, 1] as const;
 const spring = { type: "spring", stiffness: 400, damping: 25 } as const;
@@ -82,51 +80,5 @@ export function GlassButton({
       </motion.span>
       {children}
     </motion.a>
-  );
-}
-
-export function CopyButton({
-  value,
-  label,
-  copiedLabel,
-}: {
-  value: string;
-  label: string;
-  copiedLabel: string;
-}) {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!copied) return;
-    const t = setTimeout(() => setCopied(false), 1600);
-    return () => clearTimeout(t);
-  }, [copied]);
-
-  return (
-    <motion.button
-      type="button"
-      aria-label={label}
-      onClick={() => navigator.clipboard.writeText(value).then(() => setCopied(true))}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.92 }}
-      transition={spring}
-      className={`glass ${pill} w-11 overflow-hidden`}
-    >
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
-          key={copied ? "done" : "copy"}
-          initial={{ scale: 0.4, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.4, opacity: 0 }}
-          transition={spring}
-          className="grid place-items-center"
-        >
-          <HugeiconsIcon icon={copied ? Tick02Icon : Copy01Icon} size={18} strokeWidth={1.8} />
-        </motion.span>
-      </AnimatePresence>
-      <span role="status" className="sr-only">
-        {copied ? copiedLabel : ""}
-      </span>
-    </motion.button>
   );
 }

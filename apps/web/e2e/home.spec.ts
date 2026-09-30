@@ -13,7 +13,7 @@ test("home renders, switches theme and copies the email", async ({ page, context
   await expect(html).toHaveClass(wasDark ? /light/ : /dark/);
 
   await page.getByRole("button", { name: "Copy email address" }).click();
-  await expect(page.getByRole("status")).toHaveText("Email address copied");
+  await expect(page.getByRole("status").filter({ hasText: "Email address copied" })).toHaveCount(1);
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     "procopiomarco@protonmail.com",
   );

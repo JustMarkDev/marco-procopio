@@ -18,9 +18,11 @@
   --border: #e4e4e7;
   --ring: #ea580c;
   --dither-bg: #f4f4f5;
-  --dither-fg: #d4d4d8;
+  --dither-fg: #c4c4cc;
   --dither-accent: #fdba74;
   --glass-fill: rgb(250 250 250 / 0.8);
+  /* Liquid highlights (nav, tabs, footer dock). Opaque: the goo filter thresholds alpha. */
+  --pill: #e6e6e9;
 }
 
 .dark {
@@ -33,6 +35,7 @@
   --dither-fg: #27272a;
   --dither-accent: #7c2d12;
   --glass-fill: rgb(36 36 40 / 0.8);
+  --pill: #34343a;
 }
 
 @theme inline {
@@ -88,6 +91,34 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   .reveal {
+    animation: none;
+  }
+}
+
+/* Empty shelf slot (development placeholders). */
+.placeholder-dots {
+  background:
+    radial-gradient(circle, var(--dither-fg) 1px, transparent 1.4px) 0 0 / 6px 6px,
+    color-mix(in oklab, var(--foreground) 4%, transparent);
+}
+
+/* Now playing equaliser. */
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.eq {
+  animation: eq 0.9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eq {
     animation: none;
   }
 }
@@ -149,8 +180,8 @@ html {
  */
 .panel {
   position: relative;
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.9), rgb(250 250 250 / 0.82));
-  border: 1px solid rgb(255 255 255 / 0.8);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.94), rgb(250 250 250 / 0.86));
+  border: 1px solid rgb(24 24 27 / 0.07);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
     0 10px 30px -12px rgb(24 24 27 / 0.18);
@@ -162,6 +193,17 @@ html {
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.1),
     0 10px 30px -12px rgb(0 0 0 / 0.6);
+}
+
+/* Dithered portrait: a 1-bit mask per theme, inked with the text colour so it follows the theme. */
+.portrait-dots {
+  background: var(--foreground);
+  mask: url(/portrait-dots-light.png) center / cover no-repeat;
+}
+
+.dark .portrait-dots {
+  background: var(--muted-foreground);
+  mask-image: url(/portrait-dots-dark.png);
 }
 
 /* Primary action: dark tinted glass in light mode, light tinted glass in dark mode. */

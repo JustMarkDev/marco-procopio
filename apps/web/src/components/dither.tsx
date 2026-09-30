@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 
 // Size of one dither cell in CSS pixels.
 const CELL = 3;
-// Content column half width (max-w-2xl / 2) in CSS pixels.
-const COLUMN_HALF = 336;
+// Content column half width (max-w-[60rem] / 2) in CSS pixels.
+const COLUMN_HALF = 480;
 
 const vertex = `
 attribute vec2 p;
@@ -50,7 +50,7 @@ void main() {
 
   // Full-bleed art, nearly empty behind the centred content column so text stays legible.
   float x = abs(gl_FragCoord.x / u_res.x - 0.5);
-  float calm = smoothstep(u_col - 0.02, u_col + 0.18, x);
+  float calm = smoothstep(u_col - 0.02, u_col + 0.12, x);
   float level = smoothstep(0.28, 0.82, v) * calm;
 
   vec2 d = gl_FragCoord.xy - u_pointer.xy;
