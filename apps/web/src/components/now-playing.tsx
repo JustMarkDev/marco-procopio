@@ -33,7 +33,7 @@ export function NowPlaying({
     const start = () => {
       clearInterval(timer);
       if (document.visibilityState !== "visible") return;
-      load();
+      void load();
       timer = setInterval(load, POLL_MS);
     };
     start();

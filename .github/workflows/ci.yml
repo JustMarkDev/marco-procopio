@@ -23,9 +23,11 @@ jobs:
       - uses: actions/checkout@main
       - uses: oven-sh/setup-bun@main
         with:
-          bun-version-file: package.json
+          bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bun run check
+      - run: bun run test
+      - run: bun run build
       - run: bunx playwright install --with-deps chromium
         working-directory: apps/web
       - run: bun run test:e2e

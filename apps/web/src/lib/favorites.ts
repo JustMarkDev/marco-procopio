@@ -200,16 +200,13 @@ const anilist = () =>
 // Steam: most played games. Needs "Game details" set to public on the profile.
 const OwnedGames = Schema.Struct({
   response: Schema.Struct({
-    games: Schema.optionalWith(
-      Schema.Array(
-        Schema.Struct({
-          appid: Schema.Number,
-          name: Schema.String,
-          playtime_forever: Schema.Number,
-        }),
-      ),
-      { default: () => [] },
-    ),
+    games: Schema.Array(
+      Schema.Struct({
+        appid: Schema.Number,
+        name: Schema.String,
+        playtime_forever: Schema.Number,
+      }),
+    ).pipe(Schema.withDecodingDefaultKey(Effect.succeed([]))),
   }),
 });
 

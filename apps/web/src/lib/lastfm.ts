@@ -28,7 +28,7 @@ const LastfmTrack = Schema.Struct({
 const RecentTracks = Schema.Struct({
   recenttracks: Schema.Struct({
     // Last.fm returns a bare object instead of an array when there is one track.
-    track: Schema.Union(Schema.Array(LastfmTrack), LastfmTrack),
+    track: Schema.Union([Schema.Array(LastfmTrack), LastfmTrack]),
   }),
 });
 
@@ -82,7 +82,7 @@ const artwork = (artist: string, name: string): Effect.Effect<Artwork> => {
       album: track.album?.title,
     })),
     // Unknown track: fall back to the artist photo instead of failing.
-    Effect.catchAll(() => Effect.succeed<Artwork>({})),
+    Effect.catch(() => Effect.succeed<Artwork>({})),
     Effect.flatMap((found) =>
       found.image
         ? Effect.succeed(found)
@@ -91,7 +91,7 @@ const artwork = (artist: string, name: string): Effect.Effect<Artwork> => {
             ArtistInfo,
           ).pipe(
             Effect.map(({ artist }): Artwork => ({ image: large(artist.image) })),
-            Effect.catchAll(() => Effect.succeed<Artwork>({})),
+            Effect.catch(() => Effect.succeed<Artwork>({})),
           ),
     ),
     Effect.flatMap(remember),

@@ -29,28 +29,30 @@ export const profiles = {
   steam: "76561198442990697",
 };
 
+const NonEmptyTrimmed = Schema.String.check(Schema.isTrimmed(), Schema.isNonEmpty());
+
 /** One string per language, neither empty. */
 const Text = Schema.Struct({
-  en: Schema.NonEmptyTrimmedString,
-  it: Schema.NonEmptyTrimmedString,
-}).annotations({ identifier: "Text" });
+  en: NonEmptyTrimmed,
+  it: NonEmptyTrimmed,
+}).annotate({ identifier: "Text" });
 
 const ProjectSchema = Schema.Struct({
-  slug: Schema.String.pipe(Schema.pattern(/^[a-z0-9-]+$/)),
-  name: Schema.NonEmptyTrimmedString,
+  slug: Schema.String.check(Schema.isPattern(/^[a-z0-9-]+$/)),
+  name: NonEmptyTrimmed,
   kind: Text,
   summary: Text,
   overview: Text,
   highlights: Schema.Struct({
-    en: Schema.NonEmptyArray(Schema.NonEmptyTrimmedString),
-    it: Schema.NonEmptyArray(Schema.NonEmptyTrimmedString),
-  }).pipe(
-    Schema.filter((h) => h.en.length === h.it.length || "en and it highlights differ in count"),
+    en: Schema.NonEmptyArray(NonEmptyTrimmed),
+    it: Schema.NonEmptyArray(NonEmptyTrimmed),
+  }).check(
+    Schema.makeFilter((h) => h.en.length === h.it.length || "en and it highlights differ in count"),
   ),
-  stats: Schema.Array(Schema.Struct({ value: Schema.NonEmptyTrimmedString, label: Text })),
-  stack: Schema.NonEmptyArray(Schema.NonEmptyTrimmedString),
+  stats: Schema.Array(Schema.Struct({ value: NonEmptyTrimmed, label: Text })),
+  stack: Schema.NonEmptyArray(NonEmptyTrimmed),
   image: Schema.Struct({
-    src: Schema.String.pipe(Schema.startsWith("/work/")),
+    src: Schema.String.check(Schema.isStartingWith("/work/")),
     width: Schema.Int,
     height: Schema.Int,
     alt: Text,
@@ -58,18 +60,18 @@ const ProjectSchema = Schema.Struct({
   }),
   /** GitHub repo name under JustMarkDev. Omitted for private repos. */
   repo: Schema.optional(Schema.String),
-  site: Schema.optional(Schema.String.pipe(Schema.startsWith("https://"))),
-}).annotations({ identifier: "Project" });
+  site: Schema.optional(Schema.String.check(Schema.isStartingWith("https://"))),
+}).annotate({ identifier: "Project" });
 
 export type Project = typeof ProjectSchema.Type;
 
 const Projects = Schema.Array(ProjectSchema)
-  .pipe(
-    Schema.filter(
+  .check(
+    Schema.makeFilter(
       (ps) => new Set(ps.map((p) => p.slug)).size === ps.length || "project slugs must be unique",
     ),
   )
-  .annotations({ identifier: "Projects" });
+  .annotate({ identifier: "Projects" });
 
 /**
  * Type-checked against the schema, then decoded when the module loads, so an empty

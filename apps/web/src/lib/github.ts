@@ -4,7 +4,7 @@ import { ENV } from "@/env.server";
 import { fetchJson, orElse } from "@/lib/http";
 
 /** GET a GitHub API path and decode the JSON body with `schema`. */
-const githubGet = <A, I>(path: string, schema: Schema.Schema<A, I>) =>
+const githubGet = <A>(path: string, schema: Schema.Decoder<A>) =>
   fetchJson(`https://api.github.com${path}`, schema, {
     headers: {
       Accept: "application/vnd.github+json",
@@ -29,7 +29,7 @@ export const getRepoActivity = () =>
   );
 
 const PullRequest = Schema.Struct({
-  state: Schema.Literal("open", "closed"),
+  state: Schema.Literals(["open", "closed"]),
   merged_at: Schema.NullOr(Schema.DateFromString),
   base: Schema.Struct({ repo: Schema.Struct({ stargazers_count: Schema.Number }) }),
 });

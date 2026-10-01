@@ -7,7 +7,7 @@ export class FetchError extends Data.TaggedError("FetchError")<{
 }> {}
 
 /** Fetch JSON and decode it with `schema`, with a timeout and two retries. */
-export const fetchJson = <A, I>(url: string, schema: Schema.Schema<A, I>, init?: RequestInit) =>
+export const fetchJson = <A>(url: string, schema: Schema.Decoder<A>, init?: RequestInit) =>
   Effect.tryPromise({
     try: async (signal) => {
       const res = await fetch(url, { ...init, signal });
@@ -16,7 +16,7 @@ export const fetchJson = <A, I>(url: string, schema: Schema.Schema<A, I>, init?:
     },
     catch: (cause) => new FetchError({ endpoint: url.split("?")[0]!, cause }),
   }).pipe(
-    Effect.flatMap(Schema.decodeUnknown(schema)),
+    Effect.flatMap(Schema.decodeUnknownEffect(schema)),
     Effect.timeout("5 seconds"),
     Effect.retry({ times: 2 }),
   );
@@ -26,7 +26,7 @@ export const orElse =
   <B>(label: string, fallback: B) =>
   <A, E>(effect: Effect.Effect<A, E>): Effect.Effect<A | B> =>
     effect.pipe(
-      Effect.catchAll((error) =>
+      Effect.catch((error) =>
         Effect.logWarning(`${label} unavailable`, error).pipe(Effect.as(fallback)),
       ),
     );
