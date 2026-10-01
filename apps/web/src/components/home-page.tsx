@@ -1,14 +1,4 @@
-import {
-  ArrowRight01Icon,
-  ArrowUpRight01Icon,
-  Download04Icon,
-  Github01Icon,
-  GitPullRequestIcon,
-  Globe02Icon,
-  LockIcon,
-  Mail01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Download04Icon, Github01Icon, Mail01Icon } from "@hugeicons/core-free-icons";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,12 +20,11 @@ import {
 } from "@/lib/content";
 import { ENV } from "@/env.server";
 import { getFavorites, type Shelf } from "@/lib/favorites";
-import { getPullStatuses, getRepoActivity } from "@/lib/github";
+import { getPullStatuses } from "@/lib/github";
 
 export async function HomePage({ lang }: { lang: Lang }) {
   const t = ui[lang];
-  const [activity, pulls, favorites] = await Promise.all([
-    getRepoActivity(),
+  const [pulls, favorites] = await Promise.all([
     getPullStatuses(contributions.map((c) => c.href)),
     getFavorites(),
   ]);
@@ -82,7 +71,7 @@ export async function HomePage({ lang }: { lang: Lang }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(person) }}
       />
 
-      <section className="grid items-center gap-10 pt-28 pb-16 md:grid-cols-[1fr_auto] md:gap-16 md:pt-40 md:pb-8">
+      <section className="grid min-h-svh content-center items-center gap-10 pt-28 pb-16 md:grid-cols-[1fr_auto] md:gap-16">
         <Reveal onLoad className="md:order-2">
           <Portrait alt={t.portraitAlt} />
         </Reveal>
@@ -125,11 +114,6 @@ export async function HomePage({ lang }: { lang: Lang }) {
                   lang={lang}
                   t={t}
                   layout={wide ? (i % 2 ? "wide-reverse" : "wide") : "tall"}
-                  updated={
-                    project.repo && activity.has(project.repo)
-                      ? monthYear.format(activity.get(project.repo))
-                      : undefined
-                  }
                 />
               </Reveal>
             );
@@ -154,11 +138,8 @@ export async function HomePage({ lang }: { lang: Lang }) {
                     href={c.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="group flex items-center gap-4 rounded-2xl px-4 py-4 transition-colors duration-fast hover:bg-foreground/5 active:bg-foreground/10"
+                    className="flex items-center gap-4 rounded-2xl px-4 py-4 transition-colors duration-fast hover:bg-foreground/5 active:bg-foreground/10"
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-foreground/5 text-muted-foreground transition-colors duration-fast group-hover:text-ring">
-                      <HugeiconsIcon icon={GitPullRequestIcon} size={18} strokeWidth={1.8} />
-                    </span>
                     <span className="min-w-0 flex-1">
                       <span className="block font-medium">{c.title}</span>
                       <span className="block text-sm text-muted-foreground">
@@ -171,12 +152,6 @@ export async function HomePage({ lang }: { lang: Lang }) {
                         {compact.format(pr.stars)} {t.stars}
                       </span>
                     )}
-                    <HugeiconsIcon
-                      icon={ArrowUpRight01Icon}
-                      size={18}
-                      strokeWidth={1.8}
-                      className="shrink-0 text-muted-foreground transition-transform duration-fast ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
                   </a>
                 </li>
               );
@@ -266,13 +241,11 @@ function ProjectCard({
   lang,
   t,
   layout,
-  updated,
 }: {
   project: Project;
   lang: Lang;
   t: Dict;
   layout: "wide" | "wide-reverse" | "tall";
-  updated?: string;
 }) {
   const href = workPath(lang, project.slug) as Route;
   const wide = layout !== "tall";
@@ -315,31 +288,20 @@ function ProjectCard({
           {project.stats.map((s) => (
             <div key={s.value} className="flex flex-col-reverse">
               <dt className="text-xs text-muted-foreground">{s.label[lang]}</dt>
-              <dd className="font-mono text-2xl tracking-tight text-ring">{s.value}</dd>
+              <dd className="font-mono text-xl tracking-tight">{s.value}</dd>
             </div>
           ))}
         </dl>
 
-        <p className="mt-6 text-xs text-muted-foreground">
-          <span className="font-mono">{project.stack.join(" / ")}</span>
-          {updated && (
-            <span className="block sm:inline sm:before:content-['_·_']">
-              {t.updated} {updated}
-            </span>
-          )}
-        </p>
+        <p className="mt-6 font-mono text-xs text-muted-foreground">{project.stack.join(" / ")}</p>
 
         <div className="mt-auto -mx-3 flex flex-wrap items-center gap-1 pt-3 text-sm">
-          <CardLink href={href} icon={ArrowRight01Icon} label={t.caseStudy} />
-          <span className="mr-auto" />
-          {project.site && <CardLink href={project.site} icon={Globe02Icon} label={t.website} />}
+          <CardLink href={href} label={t.caseStudy} />
+          {project.site && <CardLink href={project.site} label={t.website} />}
           {project.repo ? (
-            <CardLink href={`${links.github}/${project.repo}`} icon={Github01Icon} label="GitHub" />
+            <CardLink href={`${links.github}/${project.repo}`} label="GitHub" />
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-muted-foreground">
-              <HugeiconsIcon icon={LockIcon} size={16} strokeWidth={1.8} />
-              {t.private}
-            </span>
+            <span className="px-3 py-1.5 text-muted-foreground">{t.private}</span>
           )}
         </div>
       </div>
@@ -347,32 +309,16 @@ function ProjectCard({
   );
 }
 
-function CardLink({
-  href,
-  icon,
-  label,
-}: {
-  href: string;
-  icon: typeof Github01Icon;
-  label: string;
-}) {
-  const external = href.startsWith("http");
+function CardLink({ href, label }: { href: string; label: string }) {
   const className =
-    "group/link inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium transition-colors duration-fast hover:bg-foreground/5 active:bg-foreground/10";
-  return external ? (
+    "rounded-full px-3 py-1.5 font-medium transition-colors duration-fast hover:bg-foreground/5 active:bg-foreground/10";
+  return href.startsWith("http") ? (
     <a href={href} target="_blank" rel="noreferrer" className={className}>
-      <HugeiconsIcon icon={icon} size={16} strokeWidth={1.8} />
       {label}
     </a>
   ) : (
     <Link href={href as Route} className={className}>
       {label}
-      <HugeiconsIcon
-        icon={icon}
-        size={16}
-        strokeWidth={1.8}
-        className="transition-transform duration-fast group-hover/link:translate-x-0.5"
-      />
     </Link>
   );
 }

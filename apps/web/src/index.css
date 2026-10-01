@@ -54,7 +54,7 @@
   * {
     border-color: var(--border);
   }
-  /* Background on <html> only: a body background would paint over the fixed dither canvas. */
+  /* Background on <html> only: a body background would paint over the dither canvas. */
   html {
     background: var(--background);
   }

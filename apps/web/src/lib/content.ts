@@ -166,9 +166,9 @@ export const projects = Schema.decodeSync(Projects)([
     stack: ["Tauri", "Rust", "TypeScript"],
     repo: "music-companion",
     image: {
-      src: "/work/music-companion.webp",
-      width: 2880,
-      height: 1800,
+      src: "/work/music-companion-lyrics.webp",
+      width: 784,
+      height: 520,
       alt: {
         en: "Music Companion overlay showing synced lyrics, with the current line highlighted.",
         it: "Overlay di Music Companion con i testi sincronizzati e la riga corrente evidenziata.",
@@ -330,7 +330,6 @@ export const ui = {
     copied: "Email address copied",
     private: "Private",
     website: "Website",
-    updated: "Updated",
     merged: "Merged",
     open: "Open",
     stars: "stars",
@@ -381,7 +380,6 @@ export const ui = {
     copied: "Indirizzo email copiato",
     private: "Privato",
     website: "Sito",
-    updated: "Aggiornato",
     merged: "Accettata",
     open: "Aperta",
     stars: "stelle",
