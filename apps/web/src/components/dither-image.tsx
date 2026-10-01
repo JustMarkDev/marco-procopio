@@ -5,9 +5,9 @@ import Image, { getImageProps } from "next/image";
 import { useEffect, useRef } from "react";
 
 // One dither cell in CSS pixels, the same grain as the background art.
-const CELL = 3;
+export const CELL = 3;
 // 8x8 Bayer matrix: the order cells turn on, and the order they clear on reveal.
-const BAYER = [
+export const BAYER = [
   0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60, 28,
   52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47, 7,
   39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,

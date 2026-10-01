@@ -115,7 +115,7 @@ export async function HomePage({ lang }: { lang: Lang }) {
 
       <Section id="work" title={t.work}>
         {/* Rhythm: wide, pair, wide reversed. Every third card spans the row. */}
-        <div className="grid gap-6 md:-mx-6 md:grid-cols-2">
+        <div className="grid gap-x-8 gap-y-16 md:grid-cols-2">
           {projects.map((project, i) => {
             const wide = i % 3 === 0;
             return (
@@ -225,18 +225,16 @@ export async function HomePage({ lang }: { lang: Lang }) {
 /** Dithered portrait (a 1-bit mask per theme, inked with the text colour); the photo shows on hover. */
 function Portrait({ alt }: { alt: string }) {
   return (
-    <div className="panel group relative aspect-[4/5] w-36 rounded-3xl p-1.5 md:w-72 md:p-2">
-      <div className="relative h-full overflow-hidden rounded-[1.1rem] md:rounded-2xl">
-        <div aria-hidden className="portrait-dots absolute inset-0" />
-        <Image
-          src="/portrait.webp"
-          alt={alt}
-          fill
-          priority
-          sizes="(min-width: 768px) 288px, 144px"
-          className="object-cover opacity-0 transition-opacity duration-500 ease-out-expo group-hover:opacity-100"
-        />
-      </div>
+    <div className="group relative aspect-[4/5] w-36 overflow-hidden rounded-2xl md:w-72">
+      <div aria-hidden className="portrait-dots absolute inset-0" />
+      <Image
+        src="/portrait.webp"
+        alt={alt}
+        fill
+        priority
+        sizes="(min-width: 768px) 288px, 144px"
+        className="object-cover opacity-0 transition-opacity duration-500 ease-out-expo group-hover:opacity-100"
+      />
     </div>
   );
 }
@@ -280,16 +278,15 @@ function ProjectCard({
   const wide = layout !== "tall";
   return (
     <article
-      className={`panel group flex h-full flex-col rounded-3xl p-2 transition-transform duration-500 ease-out-expo hover:-translate-y-1 ${
-        wide ? "md:grid md:grid-cols-[3fr_2fr] md:items-center md:gap-2" : ""
+      className={`group flex h-full flex-col ${
+        wide ? "md:grid md:grid-cols-[3fr_2fr] md:items-center md:gap-8" : ""
       }`}
     >
-      {/* Inner radius = card radius (24px) minus padding (8px). */}
       <Link
         href={href}
         tabIndex={-1}
         aria-hidden
-        className={`block aspect-[16/10] overflow-hidden rounded-2xl bg-foreground/5 ${
+        className={`block aspect-[16/10] overflow-hidden rounded-2xl bg-foreground/5 ring-1 ring-foreground/10 ${
           layout === "wide-reverse" ? "md:order-2" : ""
         }`}
       >
@@ -302,7 +299,7 @@ function ProjectCard({
           className="h-full w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]"
         />
       </Link>
-      <div className={`flex flex-1 flex-col px-4 pt-5 pb-4 ${wide ? "md:px-6 md:py-6" : ""}`}>
+      <div className={`flex flex-1 flex-col pt-5 ${wide ? "md:py-6" : ""}`}>
         <h3 className="text-xl font-semibold tracking-tight">
           <Link
             href={href}

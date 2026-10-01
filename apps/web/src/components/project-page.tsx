@@ -54,21 +54,19 @@ export function ProjectPage({ lang, slug }: { lang: Lang; slug: string }) {
         <p className="mt-3 text-xl text-muted-foreground md:text-2xl">{project.kind[lang]}</p>
       </Reveal>
 
-      <Reveal onLoad delay={0.1} className="mt-12 md:-mx-6">
+      <Reveal onLoad delay={0.1} className="mt-12">
         <figure>
-          <div className="panel rounded-3xl p-2">
-            <Image
-              src={project.image.src}
-              alt={project.image.alt[lang]}
-              width={project.image.width}
-              height={project.image.height}
-              priority
-              sizes="(min-width: 768px) 968px, 100vw"
-              className="w-full rounded-2xl"
-            />
-          </div>
+          <Image
+            src={project.image.src}
+            alt={project.image.alt[lang]}
+            width={project.image.width}
+            height={project.image.height}
+            priority
+            sizes="(min-width: 768px) 968px, 100vw"
+            className="w-full rounded-2xl ring-1 ring-foreground/10"
+          />
           {project.image.note && (
-            <figcaption className="mt-3 px-6 text-xs text-muted-foreground">
+            <figcaption className="mt-3 text-xs text-muted-foreground">
               {project.image.note[lang]}
             </figcaption>
           )}
@@ -128,10 +126,10 @@ export function ProjectPage({ lang, slug }: { lang: Lang; slug: string }) {
         </Reveal>
       </div>
 
-      <Reveal className="mt-24 md:-mx-6">
+      <Reveal className="mt-24">
         <Link
           href={workPath(lang, next.slug) as Route}
-          className="panel group flex items-center justify-between gap-6 rounded-3xl p-2 pr-6 transition-transform duration-500 ease-out-expo hover:-translate-y-1"
+          className="group flex items-center justify-between gap-6 border-t pt-8"
         >
           <span className="flex items-center gap-5">
             <Image
@@ -140,7 +138,7 @@ export function ProjectPage({ lang, slug }: { lang: Lang; slug: string }) {
               width={next.image.width}
               height={next.image.height}
               sizes="160px"
-              className="aspect-[16/10] w-28 rounded-2xl object-cover sm:w-40"
+              className="aspect-[16/10] w-28 rounded-2xl object-cover ring-1 ring-foreground/10 sm:w-40"
             />
             <span>
               <span className="block text-sm text-muted-foreground">{t.next}</span>
