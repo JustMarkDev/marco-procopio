@@ -13,21 +13,6 @@ const githubGet = <A>(path: string, schema: Schema.Decoder<A>) =>
     },
   });
 
-const Repos = Schema.Array(
-  Schema.Struct({
-    name: Schema.String,
-    pushed_at: Schema.DateFromString,
-  }),
-);
-
-/** Repo name -> last push date. Empty map when GitHub is unreachable, so the page still renders. */
-export const getRepoActivity = () =>
-  githubGet("/users/JustMarkDev/repos?per_page=100", Repos).pipe(
-    Effect.map((repos) => new Map(repos.map((r) => [r.name, r.pushed_at]))),
-    orElse("GitHub activity", new Map<string, Date>()),
-    Effect.runPromise,
-  );
-
 const PullRequest = Schema.Struct({
   state: Schema.Literals(["open", "closed"]),
   merged_at: Schema.NullOr(Schema.DateFromString),

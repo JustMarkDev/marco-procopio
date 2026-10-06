@@ -1,7 +1,5 @@
 "use client";
 
-import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -75,7 +73,7 @@ export function NowPlaying({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="group block"
+            className="block"
           >
             <Wave playing={track.playing} />
             <div className="mt-3 flex items-start gap-4">
@@ -89,12 +87,6 @@ export function NowPlaying({
                   {track.album && ` · ${track.album}`}
                 </p>
               </div>
-              <HugeiconsIcon
-                icon={ArrowUpRight01Icon}
-                size={18}
-                strokeWidth={1.8}
-                className="shrink-0 text-muted-foreground transition-transform duration-fast ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              />
             </div>
           </motion.a>
         </AnimatePresence>
