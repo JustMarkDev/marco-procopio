@@ -16,7 +16,9 @@
       "@tailwindcss/postcss": "^4.3.3",
       "@types/react": "^19.3.0",
       "@types/react-dom": "^19.3.0",
-      "tailwindcss": "^4.3.3"
+      "tailwindcss": "^4.3.3",
+      "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
+      "vite-plus": "1.1.0"
     }
   },
   "type": "module",
@@ -32,7 +34,8 @@
     "staged": "vp staged",
     "hooks:setup": "vp config",
     "env:generate": "varlock codegen --path ./apps/web/",
-    "postinstall": "varlock codegen --path ./apps/web/"
+    "postinstall": "varlock codegen --path ./apps/web/",
+    "prepare": "vp config"
   },
   "devDependencies": {
     "@marco-procopio/config": "workspace:*",
@@ -40,10 +43,18 @@
     "rolldown": "1.2.12",
     "typescript": "catalog:",
     "varlock": "catalog:",
-    "vite-plus": "1.0.0"
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   },
   "overrides": {
     "@next/env": "npm:@varlock/nextjs-integration@1.2.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.0.0"
+    "vite": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "bun",
+      "version": "1.4.2",
+      "onFail": "download"
+    }
   }
 }
