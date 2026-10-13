@@ -111,8 +111,13 @@ export function ArtStage() {
 
     const textures = new Map<Page, Promise<Loaded>>();
     const texture = (p: Page) => {
-      if (!textures.has(p))
-        textures.set(p, loadTexture(gl, scenes[p].src, { width: 1920, height: 1200 }));
+      if (!textures.has(p)) {
+        const loading = loadTexture(gl, scenes[p].src, { width: 1920, height: 1200 });
+        // A failed load is forgotten so the next visit retries; handling it here also
+        // keeps the warm-up preload from raising unhandled rejections.
+        loading.catch(() => textures.delete(p));
+        textures.set(p, loading);
+      }
       return textures.get(p)!;
     };
 
@@ -174,14 +179,18 @@ export function ArtStage() {
 
     show.current = (next: Page) => {
       s.wanted = next;
-      void texture(next).then((image) => {
-        if (!s.alive || s.wanted !== next || s.b?.page === next) return;
-        s.a = s.t < 0.5 ? s.a : s.b;
-        s.b = { page: next, image };
-        s.t = reduce ? 1 : 0;
-        s.start = performance.now();
-        kick();
-      });
+      // If the image fails to load, keep whatever art (or plain background) is showing.
+      texture(next).then(
+        (image) => {
+          if (!s.alive || s.wanted !== next || s.b?.page === next) return;
+          s.a = s.t < 0.5 ? s.a : s.b;
+          s.b = { page: next, image };
+          s.t = reduce ? 1 : 0;
+          s.start = performance.now();
+          kick();
+        },
+        () => {},
+      );
     };
 
     const resize = () => {

@@ -8,13 +8,13 @@ import type { Track } from "@/lib/lastfm";
 
 const POLL_MS = 30_000;
 
-/** Shown when Last.fm isn't configured: the track from the design. */
+/** Shown when Last.fm is off or down: the track from the design, not presented as playing. */
 export const FALLBACK: Track = {
   name: "Weird Fishes / Arpeggi",
   artist: "Radiohead",
   album: "In Rainbows",
   url: "https://www.last.fm/music/Radiohead/_/Weird+Fishes%2FArpeggi",
-  playing: true,
+  playing: false,
 };
 
 /** The server-rendered track, kept fresh by polling while the tab is visible. */
@@ -26,10 +26,9 @@ export function useTrack(initial: Track | null): Track {
     const load = () =>
       fetch("/api/now-playing")
         .then((res) => (res.ok ? (res.json() as Promise<Track | null>) : null))
-        .then(
-          (next) => next && setTrack(next),
-          () => {},
-        );
+        // A null body means Last.fm is down or off: drop the old track rather than
+        // keep showing it as live. Network errors keep what's on screen.
+        .then(setTrack, () => {});
     const start = () => {
       clearInterval(timer);
       if (document.visibilityState !== "visible") return;

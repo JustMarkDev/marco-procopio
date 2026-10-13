@@ -29,8 +29,13 @@ export function CopyEmail({ copy, copied: copiedLabel }: { copy: string; copied:
       <motion.button
         type="button"
         layout
+        // Blocked or missing clipboard (insecure context, denied permission): do nothing
+        // rather than throw; the address is still a mailto link next to the button.
         onClick={() =>
-          navigator.clipboard.writeText(links.emailAddress).then(() => setCopied(true))
+          navigator.clipboard?.writeText(links.emailAddress).then(
+            () => setCopied(true),
+            () => {},
+          )
         }
         whileTap={{ scale: 0.94 }}
         transition={{ type: "spring", stiffness: 500, damping: 32 }}
