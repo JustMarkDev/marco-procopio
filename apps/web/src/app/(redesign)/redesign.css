@@ -5,6 +5,7 @@
  * Color: near-black zinc, three text tiers, one orange accent.
  * Type: Bricolage Grotesque for display, Hanken Grotesk for everything else.
  * Art: full-bleed colour dither images that fade out behind the text.
+ * Motion: Motion entrances (ease-out-expo), view transitions between pages.
  */
 @theme inline {
   --font-display: var(--font-bricolage), sans-serif;
@@ -38,19 +39,69 @@
   outline-offset: 3px;
 }
 
-@keyframes rise {
-  from {
+/* Page transitions (React <ViewTransition>, typed by PageLink). */
+::view-transition {
+  pointer-events: none;
+}
+
+/* The new page builds itself with Motion, live; the old root snapshot just goes. */
+::view-transition-old(root) {
+  display: none;
+}
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* Header and art stay anchored; the art runs its own dissolve. */
+::view-transition-group(site-header),
+::view-transition-group(art) {
+  animation: none;
+}
+::view-transition-group(site-header) {
+  z-index: 100;
+}
+::view-transition-old(site-header),
+::view-transition-old(art) {
+  display: none;
+}
+::view-transition-new(site-header),
+::view-transition-new(art) {
+  animation: none;
+}
+
+/* The outgoing page drifts away from the direction of travel and blurs out. */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -48px;
+  animation: page-out 320ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 48px;
+  animation: page-out 320ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes page-out {
+  to {
     opacity: 0;
-    transform: translateY(16px);
+    translate: var(--slide-offset);
+    filter: blur(8px);
   }
 }
 
-.rise {
-  animation: rise 0.8s var(--ease-out-expo) both;
+@keyframes drop {
+  50% {
+    translate: 0 3px;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise {
-    animation: none;
+  ::view-transition-old(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
   }
 }

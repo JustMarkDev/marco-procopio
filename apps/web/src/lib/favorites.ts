@@ -245,6 +245,9 @@ const steam = () =>
         orElse("Steam games", []),
       );
 
+/** Top rated films on Trakt, best first. Empty when Trakt isn't configured or is down. */
+export const getFilms = (): Promise<Favorite[]> => Effect.runPromise(trakt("movies"));
+
 /** Top 10 per shelf, all sources in parallel. A source that fails or isn't configured is empty. */
 export const getFavorites = (): Promise<Favorites> =>
   Effect.all(
