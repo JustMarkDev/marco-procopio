@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/*
+ * Experimental redesign tokens (pen.dev "dz" palette).
+ * Color: near-black zinc, three text tiers, one orange accent.
+ * Type: Bricolage Grotesque for display, Hanken Grotesk for everything else.
+ * Art: full-bleed colour dither images that fade out behind the text.
+ */
+@theme inline {
+  --font-display: var(--font-bricolage), sans-serif;
+  --font-sans: var(--font-hanken), sans-serif;
+  --color-dz-bg: #09090b;
+  --color-dz-text: #f4f4f5;
+  --color-dz-text-2: #b4b4bb;
+  --color-dz-text-3: #7a7a84;
+  --color-dz-line: #26262b;
+  --color-dz-accent: #ff6a1a;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-dz-bg);
+    color-scheme: dark;
+  }
+  body {
+    color: var(--color-dz-text);
+    font-family: var(--font-sans);
+  }
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-dz-accent) 40%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-dz-accent);
+  outline-offset: 3px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.rise {
+  animation: rise 0.8s var(--ease-out-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}
