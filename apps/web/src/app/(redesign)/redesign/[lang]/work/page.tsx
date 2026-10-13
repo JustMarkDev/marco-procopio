@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
-import { PageTransition } from "@/components/redesign/page-transition";
 import { Rise, Words } from "@/components/redesign/reveal";
 import { WorkList, type Row } from "@/components/redesign/work-list";
-import { links, projects, workPath } from "@/lib/content";
+import { links, projects } from "@/lib/content";
 import { asLang, copy } from "@/lib/redesign/copy";
 
 export const metadata: Metadata = { title: "Work" };
@@ -18,12 +17,12 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
     return { src, width, height };
   };
 
-  // The meta column names where the arrow goes: a case study, the repo, the live site or merged PRs.
+  // The meta column names where the arrow goes: the repo, the live site or merged PRs.
+  // Private projects have nowhere to go, so they get no link.
   const rows: Row[] = [
     {
       name: "Database Contatti",
       ...t.rows.db,
-      href: workPath(lang, "database-contatti"),
       preview: preview("database-contatti"),
     },
     {
@@ -52,18 +51,16 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   ];
 
   return (
-    <PageTransition>
-      <main className="flex flex-1 flex-col pt-[30vh] pb-16 md:pt-[124px] md:pb-20">
-        <div className="max-w-[820px]">
-          <h1 className="font-display text-[clamp(3.5rem,6.7vw,6rem)] leading-[0.9] font-semibold tracking-[-0.042em]">
-            <Words text={t.title} />
-          </h1>
-          <Rise delay={0.12}>
-            <p className="mt-3 text-lg text-dz-text-2">{t.lede}</p>
-          </Rise>
-          <WorkList rows={rows} />
-        </div>
-      </main>
-    </PageTransition>
+    <main className="flex flex-1 flex-col pt-[30vh] pb-16 md:pt-[124px] md:pb-20">
+      <div className="max-w-[820px]">
+        <h1 className="font-display text-[clamp(3.5rem,6.7vw,6rem)] leading-[0.9] font-semibold tracking-[-0.042em]">
+          <Words text={t.title} />
+        </h1>
+        <Rise delay={0.12}>
+          <p className="mt-3 text-lg text-dz-text-2">{t.lede}</p>
+        </Rise>
+        <WorkList rows={rows} />
+      </div>
+    </main>
   );
 }

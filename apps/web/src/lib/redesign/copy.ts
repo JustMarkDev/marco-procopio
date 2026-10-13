@@ -55,7 +55,6 @@ export const copy = {
       copy: "copy",
       copied: "copied",
       cv: "Download CV",
-      credits: "photos",
     },
   },
   it: {
@@ -95,37 +94,8 @@ export const copy = {
       copy: "copia",
       copied: "copiato",
       cv: "Scarica il CV",
-      credits: "foto",
     },
   },
 } satisfies Record<Lang, unknown>;
 
 export type Copy = (typeof copy)["en"];
-
-/** Photo credits. Every image is openly licensed; the dithered renders are adaptations. */
-export const credits = [
-  {
-    what: "Duomo di Milano, guglie",
-    who: "Terragio67",
-    license: "CC BY-SA 4.0",
-    href: "https://commons.wikimedia.org/wiki/File:Milano_-_Duomo_di_Milano_-_Guglie,_composizione_-_2026-09-08_20-59-21_001.jpg",
-  },
-  {
-    what: "Bust of Emperor Commodus",
-    who: "J. Paul Getty Museum",
-    license: "public domain",
-    href: "https://commons.wikimedia.org/wiki/File:Bust_of_Emperor_Commodus,_right_profile_-_Getty_Museum_(92.SA.48).jpg",
-  },
-  {
-    what: "A school of fish",
-    who: "bluesbby",
-    license: "CC BY 2.0",
-    href: "https://commons.wikimedia.org/wiki/File:A_school_of_fish_(29882069786).jpg",
-  },
-  {
-    what: "Teatro Regio di Parma",
-    who: "Maurizio Moro5153",
-    license: "CC BY-SA 4.0",
-    href: "https://commons.wikimedia.org/wiki/File:Teatro_Regio_Platea_Palchi_visti_dal_Palcoscenico.jpg",
-  },
-];

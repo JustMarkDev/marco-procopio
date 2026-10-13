@@ -11,7 +11,12 @@ export type Scene = {
   mobileFocus?: Focus;
 };
 
-/** Background art per page. Masks match the pen.dev frames; mobile keeps the art above the text. */
+/**
+ * Background art per page. Masks match the pen.dev frames; mobile keeps the art above the text.
+ * Sources (Wikimedia Commons): Duomo di Milano guglie, Terragio67, CC BY-SA 4.0 · Bust of
+ * Emperor Commodus, J. Paul Getty Museum, public domain · A school of fish, bluesbby,
+ * CC BY 2.0 · Teatro Regio di Parma, Maurizio Moro5153, CC BY-SA 4.0.
+ */
 export const scenes: Record<Page, Scene> = {
   index: {
     src: "/art/duomo.webp",

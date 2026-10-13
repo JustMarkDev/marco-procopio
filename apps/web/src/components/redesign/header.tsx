@@ -14,7 +14,7 @@ export function Header({ t }: { t: Pick<Copy, "nav" | "city"> }) {
   const current = pageFromPath(usePathname());
 
   return (
-    <header className="relative z-10 flex items-center justify-between gap-6 [view-transition-name:site-header]">
+    <header className="relative z-10 flex items-center justify-between gap-6">
       <nav aria-label="Pages" className="flex items-center gap-2.5">
         {pages.map((p, i) => {
           const active = p === current;

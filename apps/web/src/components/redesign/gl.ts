@@ -6,7 +6,6 @@ export type Mask = { x0?: number; x1?: number; y0?: number; y1?: number; top?: n
 export type Focus = { x?: number; y?: number };
 
 export const BG: [number, number, number] = [9 / 255, 9 / 255, 11 / 255];
-export const ACCENT: [number, number, number] = [1, 106 / 255, 26 / 255];
 
 const vertex = `
 attribute vec2 p;

@@ -19,7 +19,8 @@ export type Row = {
   name: string;
   what: string;
   meta: string;
-  href: string;
+  /** Omitted for private projects: the row is then not a link. */
+  href?: string;
   preview?: { src: string; width: number; height: number };
 };
 
@@ -46,7 +47,31 @@ export function WorkList({ rows }: { rows: Row[] }) {
         onPointerLeave={() => setHovered(null)}
       >
         {rows.map((r, i) => {
-          const external = r.href.startsWith("https://");
+          const cells = (
+            <>
+              <span className="font-display text-2xl font-medium tracking-[-0.033em] transition-[color,translate] duration-300 ease-out group-hover:translate-x-1.5 group-hover:text-dz-accent group-focus-visible:text-dz-accent md:text-[30px]">
+                {r.name}
+              </span>
+              <span className="col-span-3 row-start-2 text-dz-text-2 transition-colors duration-150 group-hover:text-dz-text md:col-span-1 md:row-start-auto">
+                {r.what}
+              </span>
+              <span className="text-sm text-dz-text-3">{r.meta}</span>
+              {r.href ? (
+                <HugeiconsIcon
+                  icon={ArrowUpRight01Icon}
+                  size={20}
+                  className="text-dz-text-3 transition-[color,rotate,scale] duration-300 ease-out group-hover:scale-110 group-hover:rotate-45 group-hover:text-dz-accent"
+                />
+              ) : (
+                <span />
+              )}
+            </>
+          );
+          const row = {
+            onPointerEnter: (e: React.PointerEvent) => e.pointerType === "mouse" && setHovered(i),
+            className:
+              "group grid grid-cols-[1fr_auto_20px] items-center gap-x-6 gap-y-1 py-[18px] md:grid-cols-[330px_1fr_64px_20px]",
+          };
           return (
             <motion.li
               key={r.name}
@@ -62,26 +87,19 @@ export function WorkList({ rows }: { rows: Row[] }) {
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1.1, ease: EASE, delay: ENTER + 0.2 + i * 0.07 }}
               />
-              <a
-                href={r.href}
-                {...(external && { target: "_blank", rel: "noreferrer" })}
-                onPointerEnter={(e) => e.pointerType === "mouse" && setHovered(i)}
-                onFocus={() => setHovered(null)}
-                className="group grid grid-cols-[1fr_auto_20px] items-center gap-x-6 gap-y-1 py-[18px] md:grid-cols-[330px_1fr_64px_20px]"
-              >
-                <span className="font-display text-2xl font-medium tracking-[-0.033em] transition-[color,translate] duration-300 ease-out group-hover:translate-x-1.5 group-hover:text-dz-accent group-focus-visible:text-dz-accent md:text-[30px]">
-                  {r.name}
-                </span>
-                <span className="col-span-3 row-start-2 text-dz-text-2 transition-colors duration-150 group-hover:text-dz-text md:col-span-1 md:row-start-auto">
-                  {r.what}
-                </span>
-                <span className="text-sm text-dz-text-3">{r.meta}</span>
-                <HugeiconsIcon
-                  icon={ArrowUpRight01Icon}
-                  size={20}
-                  className="text-dz-text-3 transition-[color,rotate,scale] duration-300 ease-out group-hover:scale-110 group-hover:rotate-45 group-hover:text-dz-accent"
-                />
-              </a>
+              {r.href ? (
+                <a
+                  href={r.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  onFocus={() => setHovered(null)}
+                  {...row}
+                >
+                  {cells}
+                </a>
+              ) : (
+                <div {...row}>{cells}</div>
+              )}
             </motion.li>
           );
         })}

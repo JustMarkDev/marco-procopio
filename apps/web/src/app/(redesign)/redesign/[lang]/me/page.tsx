@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { FilmPoster } from "@/components/redesign/film-poster";
 import { OnRepeat } from "@/components/redesign/on-repeat";
-import { PageTransition } from "@/components/redesign/page-transition";
 import { Rise } from "@/components/redesign/reveal";
 import { getFilms, type Favorite } from "@/lib/favorites";
 import { getNowPlaying } from "@/lib/lastfm";
@@ -28,29 +27,27 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
   const shelf = films.length ? films.slice(0, 4) : FALLBACK;
 
   return (
-    <PageTransition>
-      <main className="flex flex-1 flex-col justify-end gap-14 pt-[34vh] pb-10 md:flex-row md:items-end md:justify-between md:gap-12 md:pb-[69px]">
-        <OnRepeat lang={lang} t={t} initial={track} />
-        <section aria-labelledby="films" className="w-full md:mb-16 md:w-[488px] md:shrink-0">
-          <Rise delay={0.2}>
-            <h2 id="films" className="text-[15px]">
-              {t.films}
-            </h2>
-          </Rise>
-          <ul className="mt-4 grid grid-cols-4 gap-3 md:gap-4">
-            {shelf.map((f, i) => (
-              <FilmPoster
-                key={f.title}
-                index={i}
-                title={f.title}
-                meta={films.length ? `${t.rated} ${f.meta}` : f.meta}
-                href={f.href}
-                image={f.image}
-              />
-            ))}
-          </ul>
-        </section>
-      </main>
-    </PageTransition>
+    <main className="flex flex-1 flex-col justify-end gap-14 pt-[34vh] pb-10 md:flex-row md:items-end md:justify-between md:gap-12 md:pb-[69px]">
+      <OnRepeat lang={lang} t={t} initial={track} />
+      <section aria-labelledby="films" className="w-full md:mb-16 md:w-[488px] md:shrink-0">
+        <Rise delay={0.2}>
+          <h2 id="films" className="text-[15px]">
+            {t.films}
+          </h2>
+        </Rise>
+        <ul className="mt-4 grid grid-cols-4 gap-3 md:gap-4">
+          {shelf.map((f, i) => (
+            <FilmPoster
+              key={f.title}
+              index={i}
+              title={f.title}
+              meta={films.length ? `${t.rated} ${f.meta}` : f.meta}
+              href={f.href}
+              image={f.image}
+            />
+          ))}
+        </ul>
+      </section>
+    </main>
   );
 }
