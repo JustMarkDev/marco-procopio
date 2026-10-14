@@ -20,7 +20,7 @@ bun run --cwd apps/web test:e2e   # Playwright smoke test (starts the dev server
 - `apps/web/src/lib/content.ts`: links, profiles and the Work rows.
 - `apps/web/src/lib/lastfm.ts`, `favorites.ts`: Effect programs for the live track (Last.fm) and favourite films (Trakt).
 - `apps/web/src/components/art-stage.tsx`, `gl.ts`, `scenes.ts`: the WebGL dither art behind each page and its cursor reveal.
-- `apps/web/public/art/`: background photos (sources in `scenes.ts`). `public/work/`: project screenshots. `public/Marco_Procopio_CV_{EN,IT}.pdf`: downloadable CVs, one per language.
+- `apps/web/public/art/`: background photos (sources in `scenes.ts`). `public/projects/`: project screenshots. `public/Marco_Procopio_CV_{EN,IT}.pdf`: downloadable CVs, one per language.
 
 ## Environment
 

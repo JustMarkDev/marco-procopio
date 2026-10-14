@@ -3,7 +3,7 @@ import { getImageProps } from "next/image";
 /** Fade window in 0-1 box coordinates, y from the top. Each pair runs from hidden to visible. */
 export type Mask = { x0?: number; x1?: number; y0?: number; y1?: number; top?: number };
 /** Where a cover crop centres in the image, 0-1 from the left and top, like `object-position`. */
-export type Focus = { x?: number; y?: number };
+export type Focus = { x?: number; y?: number; zoom?: number };
 
 export const BG: [number, number, number] = [9 / 255, 9 / 255, 11 / 255];
 
@@ -102,7 +102,7 @@ export function loadTexture(
 
 /** Texture-space scale and centre for an `object-fit: cover` crop of `image` in `w` x `h`. */
 export function cover(image: Loaded, w: number, h: number, focus: Focus = {}) {
-  const scale = Math.max(w / image.width, h / image.height);
+  const scale = Math.max(w / image.width, h / image.height) * (focus.zoom ?? 1);
   const cx = w / (image.width * scale);
   const cy = h / (image.height * scale);
   // Clamp so the crop never runs off the image. Texture y runs bottom-up.

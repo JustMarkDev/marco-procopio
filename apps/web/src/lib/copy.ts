@@ -35,7 +35,7 @@ export const copy = {
       lede: "Things I've built and shipped. Rust when it has to be fast, TypeScript when it has to be seen.",
       rows: {
         db: { what: "335k AI-enriched contacts, 6.6 ms search", meta: "private" },
-        music: { what: "word-by-word synced lyrics overlay", meta: "github" },
+        music: { what: "word-by-word synced lyrics overlay", meta: "live" },
         sergio: { what: "theatre actor's site, 100/100 PageSpeed", meta: "live" },
         satisfactory: { what: "best start on a 9k-node map in 16 ms", meta: "github" },
         oss: { what: "merged PRs to tools I use daily", meta: "oss" },
@@ -74,7 +74,7 @@ export const copy = {
       lede: "Cose che ho costruito e pubblicato. Rust quando deve essere veloce, TypeScript quando deve farsi vedere.",
       rows: {
         db: { what: "335k contatti arricchiti con l'AI, ricerca in 6,6 ms", meta: "privato" },
-        music: { what: "testi sincronizzati parola per parola", meta: "github" },
+        music: { what: "testi sincronizzati parola per parola", meta: "online" },
         sergio: { what: "sito di un attore teatrale, 100/100 PageSpeed", meta: "online" },
         satisfactory: {
           what: "la partenza migliore su una mappa da 9k nodi in 16 ms",
