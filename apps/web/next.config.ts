@@ -7,14 +7,18 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   images: {
-    // Posters and cover art for the "Off the clock" section.
-    remotePatterns: [
-      { protocol: "https", hostname: "**.trakt.tv" },
-      { protocol: "https", hostname: "s4.anilist.co" },
-      { protocol: "https", hostname: "cdn.cloudflare.steamstatic.com" },
-      { protocol: "https", hostname: "lastfm-img.freetls.fastly.net" },
-    ],
+    // Trakt film posters on the "me" page.
+    remotePatterns: [{ protocol: "https", hostname: "**.trakt.tv" }],
   },
+  // Links to the previous site: its Italian pages, case studies and the redesign preview.
+  redirects: async () => [
+    { source: "/it/work/:slug", destination: "/work", permanent: true },
+    { source: "/it", destination: "/", permanent: true },
+    { source: "/it/:path*", destination: "/:path*", permanent: true },
+    { source: "/work/:slug", destination: "/work", permanent: true },
+    { source: "/redesign", destination: "/", permanent: true },
+    { source: "/redesign/:path*", destination: "/:path*", permanent: true },
+  ],
 };
 
 export default withVarlock(nextConfig);
