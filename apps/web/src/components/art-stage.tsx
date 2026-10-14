@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { pageFromPath, pages, type Page } from "@/lib/redesign/copy";
+import { pageFromPath, pages, type Page } from "@/lib/copy";
 
 import { BG, common, cover, createProgram, loadTexture, type Loaded, type Mask } from "./gl";
 import { scenes } from "./scenes";
@@ -85,7 +85,7 @@ void main() {
 
 const ease = (t: number) => t * t * (3 - 2 * t);
 
-/** Full-page dithered art behind every redesign page. */
+/** Full-page dithered art behind every page. */
 export function ArtStage() {
   const ref = useRef<HTMLCanvasElement>(null);
   const show = useRef<(page: Page) => void>(() => {});

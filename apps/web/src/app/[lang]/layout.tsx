@@ -1,13 +1,14 @@
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 
-import "../../redesign.css";
-import { ArtStage } from "@/components/redesign/art-stage";
-import { Header } from "@/components/redesign/header";
-import { MotionProvider } from "@/components/redesign/motion-provider";
+import "../../index.css";
+import { ArtStage } from "@/components/art-stage";
+import { Header } from "@/components/header";
+import { MotionProvider } from "@/components/motion-provider";
 import { SITE_URL, langs } from "@/lib/content";
-import { asLang, copy } from "@/lib/redesign/copy";
+import { asLang, copy } from "@/lib/copy";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -24,17 +25,25 @@ const hanken = Hanken_Grotesk({
 export const dynamicParams = false;
 export const generateStaticParams = () => langs.map((lang) => ({ lang }));
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: { default: "Marco Procopio", template: "%s | Marco Procopio" },
-  description: "Experimental redesign of Marco Procopio's site.",
-  // Work in progress: keep it out of search results until it replaces the current site.
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const t = copy[asLang((await params).lang)];
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: `Marco Procopio - ${t.role}`, template: "%s | Marco Procopio" },
+    description: t.description,
+    // The share image lives at the app root (outside [lang]), so it's linked explicitly.
+    openGraph: { type: "website", siteName: "Marco Procopio", images: "/opengraph-image" },
+    twitter: { card: "summary_large_image", creator: "@Just_Mark_2", images: "/opengraph-image" },
+  };
+}
 
 /**
- * Root layout for the experimental redesign. Dark only. The language comes from the
- * browser via the proxy; the header and the art stay mounted while pages change.
+ * Root layout. Dark only. The language comes from the browser via the proxy, so
+ * every URL serves both; the header and the art stay mounted while pages change.
  */
 export default async function Layout({
   children,
@@ -58,6 +67,7 @@ export default async function Layout({
           </div>
         </MotionProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-import { pagePath, type Page } from "@/lib/redesign/copy";
+import { pagePath, type Page } from "@/lib/copy";
 
-/** A link to another redesign page by name. */
+/** A link to another page by name. */
 export function PageLink({
   to,
   ...props

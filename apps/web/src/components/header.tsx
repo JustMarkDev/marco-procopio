@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 
-import { pageFromPath, pages, type Copy } from "@/lib/redesign/copy";
+import { pageFromPath, pages, type Copy } from "@/lib/copy";
 
 import { MilanTime } from "./milan-time";
 import { PageLink } from "./page-link";

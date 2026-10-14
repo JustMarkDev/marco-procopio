@@ -15,19 +15,20 @@ function pickLang(header: string | null): "en" | "it" {
 }
 
 /**
- * The redesign has no language switcher: each request is rewritten to the hidden
- * /redesign/[lang] segment picked from Accept-Language. Typing a language into the
- * URL only nests it again and 404s, so the browser setting always wins.
+ * There is no language switcher: each page request is rewritten to the hidden [lang]
+ * segment picked from Accept-Language. Typing a language into the URL only nests it
+ * again and 404s, so the browser setting always wins.
  */
 export function proxy(request: NextRequest) {
   const lang = pickLang(request.headers.get("accept-language"));
   const url = request.nextUrl.clone();
-  url.pathname = url.pathname.replace(/^\/redesign/, `/redesign/${lang}`);
+  url.pathname = `/${lang}${url.pathname === "/" ? "" : url.pathname}`;
   const response = NextResponse.rewrite(url);
   response.headers.set("Vary", "Accept-Language");
   return response;
 }
 
 export const config = {
-  matcher: ["/redesign", "/redesign/:path*"],
+  // Pages only: not API routes, Next internals, metadata images or files with an extension.
+  matcher: ["/((?!api|_next|icon|opengraph-image|twitter-image|.*\\.\\w+$).*)"],
 };

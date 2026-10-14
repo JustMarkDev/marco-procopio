@@ -12,8 +12,7 @@ export const pages = ["index", "work", "me", "about"] as const;
 export type Page = (typeof pages)[number];
 
 /** Public URL of a page. The language segment is added by the proxy, never shown. */
-export const pagePath = (page: Page) =>
-  (page === "index" ? "/redesign" : `/redesign/${page}`) as Route;
+export const pagePath = (page: Page) => (page === "index" ? "/" : `/${page}`) as Route;
 
 export const pageFromPath = (path: string): Page => {
   const last = path.replace(/\/$/, "").split("/").pop();
@@ -22,6 +21,9 @@ export const pageFromPath = (path: string): Page => {
 
 export const copy = {
   en: {
+    role: "Fullstack and product engineer",
+    description:
+      "Fullstack and product engineer in Milan. React and TypeScript on the web, Rust and SQLite on the desktop.",
     nav: { index: "index", work: "work", me: "me", about: "about" },
     city: "milan",
     index: {
@@ -58,6 +60,9 @@ export const copy = {
     },
   },
   it: {
+    role: "Fullstack e product engineer",
+    description:
+      "Fullstack e product engineer a Milano. React e TypeScript sul web, Rust e SQLite sul desktop.",
     nav: { index: "indice", work: "lavori", me: "io", about: "contatti" },
     city: "milano",
     index: {

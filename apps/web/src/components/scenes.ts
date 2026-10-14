@@ -1,4 +1,4 @@
-import type { Page } from "@/lib/redesign/copy";
+import type { Page } from "@/lib/copy";
 
 import type { Focus, Mask } from "./gl";
 

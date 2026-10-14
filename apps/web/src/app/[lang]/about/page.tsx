@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-import { CopyEmail } from "@/components/redesign/copy-email";
-import { LinkTiles } from "@/components/redesign/link-tiles";
-import { Rise, Words } from "@/components/redesign/reveal";
-import { asLang, copy } from "@/lib/redesign/copy";
+import { CopyEmail } from "@/components/copy-email";
+import { LinkTiles } from "@/components/link-tiles";
+import { Rise, Words } from "@/components/reveal";
+import { asLang, copy } from "@/lib/copy";
 
 export const metadata: Metadata = { title: "About" };
 

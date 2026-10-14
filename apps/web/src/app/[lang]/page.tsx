@@ -1,7 +1,7 @@
-import { Rise, Words } from "@/components/redesign/reveal";
-import { TrackLine } from "@/components/redesign/track-line";
+import { Rise, Words } from "@/components/reveal";
+import { TrackLine } from "@/components/track-line";
 import { getNowPlaying } from "@/lib/lastfm";
-import { asLang, copy } from "@/lib/redesign/copy";
+import { asLang, copy } from "@/lib/copy";
 
 // The track is refreshed client-side; this only bounds how stale the first paint is.
 export const revalidate = 3600;

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { links, type Lang } from "@/lib/content";
 import type { Track } from "@/lib/lastfm";
-import type { Copy } from "@/lib/redesign/copy";
+import type { Copy } from "@/lib/copy";
 
 import { ago, Equalizer, useTrack } from "./live-track";
 import { ENTER, Rise, Words } from "./reveal";

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { FilmPoster } from "@/components/redesign/film-poster";
-import { OnRepeat } from "@/components/redesign/on-repeat";
-import { Rise } from "@/components/redesign/reveal";
+import { FilmPoster } from "@/components/film-poster";
+import { OnRepeat } from "@/components/on-repeat";
+import { Rise } from "@/components/reveal";
 import { getFilms, type Favorite } from "@/lib/favorites";
 import { getNowPlaying } from "@/lib/lastfm";
-import { asLang, copy } from "@/lib/redesign/copy";
+import { asLang, copy } from "@/lib/copy";
 
 export const metadata: Metadata = { title: "Me" };
 
