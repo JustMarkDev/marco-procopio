@@ -9,7 +9,12 @@ export const links = {
   github: "https://github.com/JustMarkDev",
   linkedin: "https://www.linkedin.com/in/justmark",
   x: "https://x.com/Just_Mark_2",
-  cv: "/Marco-Procopio-CV.pdf",
+};
+
+/** The CV PDF for each language. */
+export const cvs: Record<Lang, string> = {
+  en: "/Marco_Procopio_CV_EN.pdf",
+  it: "/Marco_Procopio_CV_IT.pdf",
 };
 
 /** Public profile IDs for the live music and films. An empty ID hides that source. */

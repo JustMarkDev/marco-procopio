@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { CopyEmail } from "@/components/copy-email";
 import { LinkTiles } from "@/components/link-tiles";
 import { Rise, Words } from "@/components/reveal";
+import { cvs } from "@/lib/content";
 import { asLang, copy } from "@/lib/copy";
 
 export const metadata: Metadata = { title: "About" };
@@ -35,7 +36,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
           <Rise delay={0.3}>
             <h2 className="text-sm text-dz-text-3">{t.elsewhere}</h2>
           </Rise>
-          <LinkTiles cv={t.cv} />
+          <LinkTiles cv={t.cv} cvHref={cvs[lang]} />
         </div>
       </section>
     </main>

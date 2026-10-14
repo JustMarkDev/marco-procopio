@@ -35,7 +35,7 @@ const enter = (i: number) => ({
 });
 
 /** Social links and the CV download, as a 2x2 grid of tiles. */
-export function LinkTiles({ cv }: { cv: string }) {
+export function LinkTiles({ cv, cvHref }: { cv: string; cvHref: string }) {
   return (
     <ul className="mt-3 grid gap-3 sm:grid-cols-2">
       {elsewhere.map((l, i) => (
@@ -61,7 +61,7 @@ export function LinkTiles({ cv }: { cv: string }) {
       ))}
       <motion.li {...enter(3)}>
         <motion.a
-          href={links.cv}
+          href={cvHref}
           download
           {...press}
           className={`${tile} group bg-dz-text font-semibold text-dz-bg transition-[background-color,box-shadow] duration-300 hover:bg-white hover:shadow-[0_12px_32px_-12px_rgb(255_106_26/0.6)]`}
