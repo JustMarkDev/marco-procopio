@@ -28,7 +28,9 @@ export const scenes: Record<Page, Scene> = {
   work: {
     src: "/art/commodus.webp",
     brightness: -0.04,
-    mask: { x0: 0.5, x1: 0.72, top: 0.12 },
+    // Zoomed and anchored left so the bust stays right of the project list on narrow desktops.
+    mask: { x0: 0.62, x1: 0.78, top: 0.12 },
+    focus: { x: 0, zoom: 1.25 },
     mobileMask: { y0: 0.36, y1: 0.12, top: 0.05 },
     mobileFocus: { x: 0.8, y: 0.4 },
   },

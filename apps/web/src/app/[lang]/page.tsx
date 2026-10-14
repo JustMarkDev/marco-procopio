@@ -1,6 +1,8 @@
+import { QuickLinks } from "@/components/quick-links";
 import { Rise, Words } from "@/components/reveal";
 import { TrackLine } from "@/components/track-line";
 import { getNowPlaying } from "@/lib/lastfm";
+import { cvs } from "@/lib/content";
 import { asLang, copy } from "@/lib/copy";
 
 // The track is refreshed client-side; this only bounds how stale the first paint is.
@@ -25,6 +27,7 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
         <Rise delay={0.3}>
           <p className="mt-8 max-w-[520px] text-xl leading-[1.4] md:text-2xl">{t.index.line}</p>
         </Rise>
+        <QuickLinks cv={t.about.cv} cvHref={cvs[lang]} />
       </main>
       <TrackLine initial={track} more={t.index.more} />
     </div>

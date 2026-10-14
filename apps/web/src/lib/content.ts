@@ -24,14 +24,17 @@ export const profiles = {
   trakt: "just-mark",
 };
 
-const screenshot = (slug: string) => ({ src: `/work/${slug}.webp`, width: 2880, height: 1800 });
+const screenshot = (slug: string) => ({ src: `/projects/${slug}.webp`, width: 2880, height: 1800 });
 
-/** Work rows: where each project lives and the screenshot shown on hover. */
+/**
+ * Work rows: where each project lives and the screenshot shown on hover. Screenshots
+ * stay out of /work/, which the redirects in next.config.ts send to the work page.
+ */
 export const projects = {
   /** Private: no public repo or site, so the row isn't a link. */
   databaseContatti: { preview: screenshot("database-contatti") },
   musicCompanion: {
-    href: `${links.github}/music-companion`,
+    href: "https://music-companion-orcin.vercel.app",
     preview: screenshot("music-companion"),
   },
   sergioProcopio: { href: "https://sergioprocopio.it", preview: screenshot("sergio-procopio") },
