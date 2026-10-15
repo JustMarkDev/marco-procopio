@@ -25,6 +25,8 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
+      # Throwaway key: production builds encrypt the injected env and need one to build and start.
+      - run: echo "_VARLOCK_ENV_KEY=$(bunx varlock generate-key --plain)" >> "$GITHUB_ENV"
       - run: bun run check
       - run: bun run test
       - run: bun run build
