@@ -30,5 +30,5 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Pages only: not API routes, Next internals, metadata images or files with an extension.
-  matcher: ["/((?!api|_next|icon|opengraph-image|twitter-image|.*\\.\\w+$).*)"],
+  matcher: ["/((?!api|_next|icon|apple-icon|opengraph-image|twitter-image|.*\\.\\w+$).*)"],
 };
