@@ -40,15 +40,21 @@ export function FilmPoster({
   image?: string;
   index: number;
 }) {
-  const ref = useRef<HTMLCanvasElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const setReveal = useRef<(to: number) => void>(() => {});
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
 
   useEffect(() => {
-    const canvas = ref.current;
-    const gl = canvas?.getContext("webgl", { antialias: false, alpha: false });
-    if (!canvas || !gl || !image) return;
+    const box = ref.current;
+    if (!box || !image) return;
+    // A fresh canvas per run, so its context can be released on cleanup: browsers cap live
+    // WebGL contexts and phones run out of memory long before collecting forgotten ones.
+    const canvas = document.createElement("canvas");
+    canvas.className = "block h-full w-full";
+    box.append(canvas);
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
+    if (!gl) return () => canvas.remove();
     const { program, u } = createProgram(gl, fragment);
     const dpr = Math.min(devicePixelRatio, 2);
     gl.uniform1f(u("u_px"), 2 * dpr);
@@ -104,7 +110,10 @@ export function FilmPoster({
       alive = false;
       controls?.stop();
       observer.disconnect();
+      if (loaded) gl.deleteTexture(loaded.texture);
       gl.deleteProgram(program);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      canvas.remove();
     };
   }, [image, reduce]);
 
@@ -132,10 +141,10 @@ export function FilmPoster({
         className="group block"
       >
         <div className="relative aspect-[110/162] overflow-hidden bg-white/[0.04] ring-1 ring-white/10 transition-shadow duration-300 ring-inset group-hover:shadow-[0_18px_40px_-12px_rgb(255_106_26/0.35)]">
-          <canvas
+          <div
             ref={ref}
             aria-hidden
-            className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 transition-opacity duration-500 ${ready ? "opacity-100" : "opacity-0"}`}
           />
           {!image && (
             <div className="absolute inset-0 bg-[radial-gradient(circle,rgb(255_255_255/0.14)_1px,transparent_1.4px)] bg-[length:6px_6px]" />
