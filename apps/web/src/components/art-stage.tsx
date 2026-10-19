@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { pageFromPath, pages, type Page } from "@/lib/copy";
 
+import { ART_BOX, ART_SIZES } from "./art-image";
 import { BG, common, cover, createProgram, loadTexture, type Loaded, type Mask } from "./gl";
 import { scenes } from "./scenes";
 
@@ -40,6 +41,7 @@ uniform float u_hasA;
 uniform float u_t;
 uniform vec3 u_trail[${TRAIL}];
 uniform float u_radius;
+uniform float u_live;
 
 // Position in a layer's frame (top edge and height in px): x across the canvas, y down.
 vec2 frameAt(vec2 p, vec2 box) {
@@ -81,7 +83,7 @@ void main() {
   float mask = mix(maskA, maskB, u_t);
 
   // Veil: only where the image is clearly visible, so text areas stay calm.
-  float v = veil(vec2(p.x, u_res.y - p.y)) * smoothstep(0.2, 0.7, mask);
+  float v = u_live > 0.5 ? veil(vec2(p.x, u_res.y - p.y)) * smoothstep(0.2, 0.7, mask) : 0.0;
   if (b < v) {
     vec3 photoB = sampleAt(u_texB, u_coverB, frameAt(gl_FragCoord.xy, u_boxB)) * maskB;
     vec3 photoA = u_hasA > 0.5 ? sampleAt(u_texA, u_coverA, frameAt(gl_FragCoord.xy, u_boxA)) * maskA : vec3(0.0);
@@ -100,6 +102,8 @@ export function ArtStage() {
   const ref = useRef<HTMLCanvasElement>(null);
   const show = useRef<(page: Page) => void>(() => {});
   const page = pageFromPath(usePathname());
+  // The page to show once the shader is ready, which can be after a navigation.
+  const latest = useRef(page);
   // Bumped when the browser restores a lost context, to set everything up again.
   const [generation, setGeneration] = useState(0);
 
@@ -107,173 +111,196 @@ export function ArtStage() {
     const canvas = ref.current;
     const gl = canvas?.getContext("webgl", { antialias: false, alpha: false });
     if (!canvas || !gl) return;
-    const { program, u } = createProgram(gl, fragment);
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // The sharp photo only shows under a mouse; touch screens see just the dither, so a
-    // small texture is enough and keeps phones well clear of their memory limits.
-    const size = window.matchMedia("(hover: hover) and (pointer: fine)").matches
-      ? { width: 1920, height: 1200 }
-      : { width: 600, height: 375 };
-    // Device pixels, so the revealed photo is sharp; the dither cell stays 3 CSS px.
-    const dpr = Math.min(devicePixelRatio, 2);
+    const start = ({ program, u }: Awaited<ReturnType<typeof createProgram>>) => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Device pixels, so the revealed photo is sharp; the dither cell stays 3 CSS px.
+      const dpr = Math.min(devicePixelRatio, 2);
 
-    gl.uniform1f(u("u_px"), 3 * dpr);
-    gl.uniform1f(u("u_levels"), 4);
-    gl.uniform1f(u("u_contrast"), 1.1);
-    gl.uniform1f(u("u_saturation"), 1.05);
-    gl.uniform3fv(u("u_bg"), BG);
-    gl.uniform1f(u("u_radius"), RADIUS * dpr);
-    gl.uniform1i(u("u_texA"), 0);
-    gl.uniform1i(u("u_texB"), 1);
+      gl.uniform1f(u("u_px"), 3 * dpr);
+      gl.uniform1f(u("u_levels"), 4);
+      gl.uniform1f(u("u_contrast"), 1.1);
+      gl.uniform1f(u("u_saturation"), 1.05);
+      gl.uniform3fv(u("u_bg"), BG);
+      gl.uniform1f(u("u_radius"), RADIUS * dpr);
+      gl.uniform1i(u("u_texA"), 0);
+      gl.uniform1i(u("u_texB"), 1);
 
-    const textures = new Map<Page, Promise<Loaded>>();
-    const texture = (p: Page) => {
-      if (!textures.has(p)) {
-        const loading = loadTexture(gl, scenes[p].src, size);
-        // A failed load is forgotten so the next visit retries; handling it here also
-        // keeps the warm-up preload from raising unhandled rejections.
-        loading.catch(() => textures.delete(p));
-        textures.set(p, loading);
-      }
-      return textures.get(p)!;
-    };
-
-    type Layer = { page: Page; image: Loaded };
-    type Point = { x: number; y: number; born: number };
-    const s = {
-      a: null as Layer | null,
-      b: null as Layer | null,
-      t: 1,
-      start: 0,
-      trail: [] as Point[],
-      wanted: null as Page | null,
-      frame: 0,
-      alive: true,
-    };
-    const trail = new Float32Array(TRAIL * 3);
-
-    const bindLayer = (key: "A" | "B", l: Layer, unit: number) => {
-      const scene = scenes[l.page];
-      const narrow = window.innerWidth < 768;
-      const mask: Mask = narrow ? scene.mobileMask : scene.mask;
-      const focus = narrow ? scene.mobileFocus : scene.focus;
-      const frame = narrow ? scene.mobileFrame : undefined;
-      // clientHeight stays put while mobile toolbars slide in and out, unlike innerHeight.
-      const height = frame
-        ? Math.min(canvas.height, frame.height * document.documentElement.clientHeight * dpr)
-        : canvas.height;
-      const c = cover(l.image, canvas.width, height, focus);
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, l.image.texture);
-      gl.uniform4f(u(`u_cover${key}`), c.scale[0], c.scale[1], c.centre[0], c.centre[1]);
-      gl.uniform2f(u(`u_box${key}`), frame?.bottom ? canvas.height - height : 0, height);
-      gl.uniform4f(u(`u_mask${key}`), mask.x0 ?? 0, mask.x1 ?? 0, mask.y0 ?? 0, mask.y1 ?? 0);
-      gl.uniform1f(u(`u_top${key}`), mask.top ?? 0);
-      gl.uniform1f(u(`u_bright${key}`), scene.brightness);
-    };
-
-    const draw = (now = performance.now()) => {
-      if (!s.b) return;
-      s.trail = s.trail.filter((p) => now - p.born < LIFE);
-      trail.fill(0);
-      s.trail.forEach((p, i) => {
-        trail.set([p.x * dpr, p.y * dpr, (1 - (now - p.born) / LIFE) ** 1.5], i * 3);
-      });
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(u("u_res"), canvas.width, canvas.height);
-      bindLayer("B", s.b, 1);
-      if (s.a) bindLayer("A", s.a, 0);
-      gl.uniform1f(u("u_hasA"), s.a ? 1 : 0);
-      gl.uniform1f(u("u_t"), ease(s.t));
-      gl.uniform3fv(u("u_trail"), trail);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
-
-    // Animate only while the crossfade runs or the trail is still knitting back.
-    const tick = (now: number) => {
-      s.frame = 0;
-      if (s.t < 1) s.t = Math.min((now - s.start) / FADE, 1);
-      draw(now);
-      if (s.t < 1 || s.trail.length) s.frame = requestAnimationFrame(tick);
-    };
-    const kick = () => {
-      if (!s.frame) s.frame = requestAnimationFrame(tick);
-    };
-
-    show.current = (next: Page) => {
-      s.wanted = next;
-      // If the image fails to load, keep whatever art (or plain background) is showing.
-      texture(next).then(
-        (image) => {
-          if (!s.alive || s.wanted !== next || s.b?.page === next) return;
-          s.a = s.t < 0.5 ? s.a : s.b;
-          s.b = { page: next, image };
-          s.t = reduce ? 1 : 0;
-          s.start = performance.now();
-          kick();
-        },
-        () => {},
-      );
-    };
-
-    const resize = () => {
-      canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
-      canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
-      draw();
-    };
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas);
-
-    const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse" || reduce) return;
-      const box = canvas.getBoundingClientRect();
-      const x = e.clientX - box.left;
-      const y = e.clientY - box.top;
-      const now = performance.now();
-      // Fill gaps on fast moves so the trail stays continuous.
-      const last = s.trail.at(-1);
-      if (last) {
-        const steps = Math.min(Math.floor(Math.hypot(x - last.x, y - last.y) / (RADIUS * 0.4)), 6);
-        for (let i = 1; i <= steps; i++) {
-          const k = i / (steps + 1);
-          s.trail.push({ x: last.x + (x - last.x) * k, y: last.y + (y - last.y) * k, born: now });
+      const textures = new Map<Page, Promise<Loaded>>();
+      const texture = (p: Page) => {
+        if (!textures.has(p)) {
+          const loading = loadTexture(gl, scenes[p].src, ART_BOX, ART_SIZES);
+          // A failed load is forgotten so the next visit retries; handling it here also
+          // keeps the warm-up preload from raising unhandled rejections.
+          loading.catch(() => textures.delete(p));
+          textures.set(p, loading);
         }
-      }
-      s.trail.push({ x, y, born: now });
-      s.trail = s.trail.slice(-TRAIL);
-      kick();
-    };
-    window.addEventListener("pointermove", onMove);
+        return textures.get(p)!;
+      };
 
-    // Phones drop GPU contexts under memory pressure or in the background; without
-    // preventDefault the browser never gives this one back and the art stays blank.
-    const onLost = (e: Event) => e.preventDefault();
-    const onRestored = () => setGeneration((g) => g + 1);
-    canvas.addEventListener("webglcontextlost", onLost);
-    canvas.addEventListener("webglcontextrestored", onRestored);
+      type Layer = { page: Page; image: Loaded };
+      type Point = { x: number; y: number; born: number };
+      const s = {
+        a: null as Layer | null,
+        b: null as Layer | null,
+        t: 1,
+        start: 0,
+        trail: [] as Point[],
+        wanted: null as Page | null,
+        frame: 0,
+        alive: true,
+      };
+      const trail = new Float32Array(TRAIL * 3);
 
-    // Warm the cache so later page changes start without a network wait.
-    const warm = setTimeout(() => pages.forEach((p) => void texture(p)), 2500);
+      const bindLayer = (key: "A" | "B", l: Layer, unit: number) => {
+        const scene = scenes[l.page];
+        const narrow = window.innerWidth < 768;
+        const mask: Mask = narrow ? scene.mobileMask : scene.mask;
+        const focus = narrow ? scene.mobileFocus : scene.focus;
+        const frame = narrow ? scene.mobileFrame : undefined;
+        // clientHeight stays put while mobile toolbars slide in and out, unlike innerHeight.
+        const height = frame
+          ? Math.min(canvas.height, frame.height * document.documentElement.clientHeight * dpr)
+          : canvas.height;
+        const c = cover(l.image, canvas.width, height, focus);
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(gl.TEXTURE_2D, l.image.texture);
+        gl.uniform4f(u(`u_cover${key}`), c.scale[0], c.scale[1], c.centre[0], c.centre[1]);
+        gl.uniform2f(u(`u_box${key}`), frame?.bottom ? canvas.height - height : 0, height);
+        gl.uniform4f(u(`u_mask${key}`), mask.x0 ?? 0, mask.x1 ?? 0, mask.y0 ?? 0, mask.y1 ?? 0);
+        gl.uniform1f(u(`u_top${key}`), mask.top ?? 0);
+        gl.uniform1f(u(`u_bright${key}`), scene.brightness);
+      };
 
-    return () => {
-      s.alive = false;
-      cancelAnimationFrame(s.frame);
-      clearTimeout(warm);
-      observer.disconnect();
-      window.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("webglcontextlost", onLost);
-      canvas.removeEventListener("webglcontextrestored", onRestored);
-      textures.forEach((t) =>
-        t.then(
-          (l) => gl.deleteTexture(l.texture),
+      const draw = (now = performance.now()) => {
+        if (!s.b) return;
+        s.trail = s.trail.filter((p) => now - p.born < LIFE);
+        trail.fill(0);
+        s.trail.forEach((p, i) => {
+          trail.set([p.x * dpr, p.y * dpr, (1 - (now - p.born) / LIFE) ** 1.5], i * 3);
+        });
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.uniform2f(u("u_res"), canvas.width, canvas.height);
+        bindLayer("B", s.b, 1);
+        if (s.a) bindLayer("A", s.a, 0);
+        gl.uniform1f(u("u_hasA"), s.a ? 1 : 0);
+        gl.uniform1f(u("u_t"), ease(s.t));
+        gl.uniform3fv(u("u_trail"), trail);
+        gl.uniform1f(u("u_live"), s.trail.length ? 1 : 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+
+      // Animate only while the crossfade runs or the trail is still knitting back.
+      const tick = (now: number) => {
+        s.frame = 0;
+        if (s.t < 1) s.t = Math.min((now - s.start) / FADE, 1);
+        draw(now);
+        if (s.t < 1 || s.trail.length) s.frame = requestAnimationFrame(tick);
+      };
+      const kick = () => {
+        if (!s.frame) s.frame = requestAnimationFrame(tick);
+      };
+
+      show.current = (next: Page) => {
+        s.wanted = next;
+        // If the image fails to load, keep whatever art (or plain background) is showing.
+        texture(next).then(
+          (image) => {
+            if (!s.alive || s.wanted !== next || s.b?.page === next) return;
+            s.a = s.t < 0.5 ? s.a : s.b;
+            s.b = { page: next, image };
+            s.t = reduce ? 1 : 0;
+            s.start = performance.now();
+            kick();
+          },
           () => {},
-        ),
-      );
-      gl.deleteProgram(program);
+        );
+      };
+
+      const resize = () => {
+        canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
+        canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
+        draw();
+      };
+      const observer = new ResizeObserver(resize);
+      observer.observe(canvas);
+
+      const onMove = (e: PointerEvent) => {
+        if (e.pointerType !== "mouse" || reduce) return;
+        const box = canvas.getBoundingClientRect();
+        const x = e.clientX - box.left;
+        const y = e.clientY - box.top;
+        const now = performance.now();
+        // Fill gaps on fast moves so the trail stays continuous.
+        const last = s.trail.at(-1);
+        if (last) {
+          const steps = Math.min(
+            Math.floor(Math.hypot(x - last.x, y - last.y) / (RADIUS * 0.4)),
+            6,
+          );
+          for (let i = 1; i <= steps; i++) {
+            const k = i / (steps + 1);
+            s.trail.push({ x: last.x + (x - last.x) * k, y: last.y + (y - last.y) * k, born: now });
+          }
+        }
+        s.trail.push({ x, y, born: now });
+        s.trail = s.trail.slice(-TRAIL);
+        kick();
+      };
+      window.addEventListener("pointermove", onMove);
+
+      // Phones drop GPU contexts under memory pressure or in the background; without
+      // preventDefault the browser never gives this one back and the art stays blank.
+      const onLost = (e: Event) => e.preventDefault();
+      const onRestored = () => setGeneration((g) => g + 1);
+      canvas.addEventListener("webglcontextlost", onLost);
+      canvas.addEventListener("webglcontextrestored", onRestored);
+
+      // Once the page has settled, warm the cache so later page changes start without a
+      // network wait.
+      const warm = () => {
+        const run = () => s.alive && pages.forEach((p) => void texture(p));
+        if ("requestIdleCallback" in window) requestIdleCallback(run, { timeout: 4000 });
+        else setTimeout(run, 1000);
+      };
+      if (document.readyState === "complete") warm();
+      else window.addEventListener("load", warm, { once: true });
+
+      return () => {
+        s.alive = false;
+        cancelAnimationFrame(s.frame);
+        window.removeEventListener("load", warm);
+        observer.disconnect();
+        window.removeEventListener("pointermove", onMove);
+        canvas.removeEventListener("webglcontextlost", onLost);
+        canvas.removeEventListener("webglcontextrestored", onRestored);
+        textures.forEach((t) =>
+          t.then(
+            (l) => gl.deleteTexture(l.texture),
+            () => {},
+          ),
+        );
+        gl.deleteProgram(program);
+      };
+    };
+
+    // The shader compiles off the main thread, so hydration isn't held up by it.
+    let stop = () => {};
+    let cancelled = false;
+    void createProgram(gl, fragment).then((made) => {
+      if (cancelled) return gl.deleteProgram(made.program);
+      stop = start(made);
+      show.current(latest.current);
+    });
+    return () => {
+      cancelled = true;
+      stop();
     };
   }, [generation]);
 
-  useEffect(() => show.current(page), [page, generation]);
+  useEffect(() => {
+    latest.current = page;
+    show.current(page);
+  }, [page, generation]);
 
   return <canvas ref={ref} aria-hidden className="absolute inset-0 -z-10 h-full w-full" />;
 }

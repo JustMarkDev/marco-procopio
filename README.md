@@ -2,7 +2,7 @@
 
 Personal portfolio of Marco Procopio, built with Next.js 16, Tailwind CSS v4, Motion, WebGL and Effect.
 Four pages (`/`, `/work`, `/me`, `/about`), dark only. Each serves English or Italian from the same
-URL: `src/proxy.ts` picks from the browser's Accept-Language and rewrites to a hidden `[lang]` segment.
+URL: the `rewrites` in `apps/web/next.config.ts` pick from the browser's Accept-Language and rewrite to a hidden `[lang]` segment.
 
 ## Develop
 

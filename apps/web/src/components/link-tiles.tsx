@@ -13,7 +13,7 @@ import { motion } from "motion/react";
 
 import { links } from "@/lib/content";
 
-import { EASE, ENTER } from "./reveal";
+import { after } from "./reveal";
 
 const elsewhere = [
   { label: "JustMarkDev", href: links.github, icon: GithubIcon },
@@ -29,9 +29,8 @@ const press = {
 } as const;
 
 const enter = (i: number) => ({
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: EASE, delay: ENTER + 0.35 + i * 0.06 },
+  className: "enter [--enter-dur:0.7s] [--enter-y:12px]",
+  style: after(0.35 + i * 0.06),
 });
 
 /** Social links and the CV download, as a 2x2 grid of tiles. */
@@ -39,7 +38,7 @@ export function LinkTiles({ cv, cvHref }: { cv: string; cvHref: string }) {
   return (
     <ul className="mt-3 grid gap-3 sm:grid-cols-2">
       {elsewhere.map((l, i) => (
-        <motion.li key={l.label} {...enter(i)}>
+        <li key={l.label} {...enter(i)}>
           <motion.a
             href={l.href}
             target="_blank"
@@ -57,9 +56,9 @@ export function LinkTiles({ cv, cvHref }: { cv: string; cvHref: string }) {
               className="text-dz-text-3 transition-[color,translate] duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-dz-accent"
             />
           </motion.a>
-        </motion.li>
+        </li>
       ))}
-      <motion.li {...enter(3)}>
+      <li {...enter(3)}>
         <motion.a
           href={cvHref}
           download
@@ -76,7 +75,7 @@ export function LinkTiles({ cv, cvHref }: { cv: string; cvHref: string }) {
             className="group-hover:motion-safe:animate-[drop_0.9s_ease-in-out_infinite]"
           />
         </motion.a>
-      </motion.li>
+      </li>
     </ul>
   );
 }

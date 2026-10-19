@@ -42,7 +42,7 @@ export async function generateMetadata({
 }
 
 /**
- * Root layout. Dark only. The language comes from the browser via the proxy, so
+ * Root layout. Dark only. The language comes from the browser via the rewrites in next.config.ts, so
  * every URL serves both; the header and the art stay mounted while pages change.
  */
 export default async function Layout({

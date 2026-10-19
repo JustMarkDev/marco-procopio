@@ -27,17 +27,21 @@ export const profiles = {
 const screenshot = (slug: string) => ({ src: `/projects/${slug}.webp`, width: 2880, height: 1800 });
 
 /**
- * Work rows: where each project lives and the screenshot shown on hover. Screenshots
- * stay out of /work/, which the redirects in next.config.ts send to the work page.
+ * Work rows: where each project lives and what shows on hover: a live iframe of the
+ * site (always current, needs a site that allows framing) or a screenshot for the rest.
+ * Screenshots stay out of /work/, which the redirects in next.config.ts send to the work page.
  */
 export const projects = {
   /** Private: no public repo or site, so the row isn't a link. */
   databaseContatti: { preview: screenshot("database-contatti") },
   musicCompanion: {
     href: "https://music-companion-orcin.vercel.app",
-    preview: screenshot("music-companion"),
+    preview: { live: "https://music-companion-orcin.vercel.app" },
   },
-  sergioProcopio: { href: "https://sergioprocopio.it", preview: screenshot("sergio-procopio") },
+  sergioProcopio: {
+    href: "https://sergioprocopio.it",
+    preview: { live: "https://sergioprocopio.it" },
+  },
   satisfactory: {
     href: `${links.github}/satisfactory-start-optimizer`,
     preview: screenshot("satisfactory-start-optimizer"),

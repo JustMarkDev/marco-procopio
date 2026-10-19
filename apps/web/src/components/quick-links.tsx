@@ -11,7 +11,7 @@ import { motion } from "motion/react";
 
 import { links } from "@/lib/content";
 
-import { EASE, ENTER } from "./reveal";
+import { after } from "./reveal";
 
 const button =
   "flex h-11 items-center gap-2.5 rounded-lg text-sm font-medium transition-colors duration-200";
@@ -25,11 +25,9 @@ const press = {
 /** Quick contact row for the home page: CV download, email and the two profiles. */
 export function QuickLinks({ cv, cvHref }: { cv: string; cvHref: string }) {
   return (
-    <motion.div
-      className="mt-8 flex flex-wrap gap-3"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: EASE, delay: ENTER + 0.45 }}
+    <div
+      className="enter mt-8 flex flex-wrap gap-3 [--enter-dur:0.7s] [--enter-y:12px]"
+      style={after(0.45)}
     >
       <motion.a
         href={cvHref}
@@ -68,6 +66,6 @@ export function QuickLinks({ cv, cvHref }: { cv: string; cvHref: string }) {
       >
         <HugeiconsIcon icon={Linkedin02Icon} size={20} />
       </motion.a>
-    </motion.div>
+    </div>
   );
 }

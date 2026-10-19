@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { preconnect } from "react-dom";
 
+import { preloadArt } from "@/components/art-image";
 import { Rise, Words } from "@/components/reveal";
 import { WorkList, type Row } from "@/components/work-list";
 import { projects } from "@/lib/content";
@@ -8,6 +10,7 @@ import { asLang, copy } from "@/lib/copy";
 export const metadata: Metadata = { title: "Work" };
 
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
+  preloadArt("work");
   const t = copy[asLang((await params).lang)].work;
   const rows: Row[] = [
     { name: "Database Contatti", ...t.rows.db, ...projects.databaseContatti },
@@ -16,6 +19,11 @@ export default async function Page({ params }: { params: Promise<{ lang: string 
     { name: "Satisfactory Optimizer", ...t.rows.satisfactory, ...projects.satisfactory },
     { name: "T3 Code & Raycast", ...t.rows.oss, ...projects.oss },
   ];
+
+  // Hovering a live preview loads the site in a frame: have its connection ready by then.
+  for (const { preview } of rows) {
+    if (preview && "live" in preview) preconnect(new URL(preview.live).origin);
+  }
 
   return (
     <main className="flex flex-1 flex-col pt-[30vh] pb-16 md:pt-[124px] md:pb-20">
