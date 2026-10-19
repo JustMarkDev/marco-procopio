@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { preloadArt } from "@/components/art-image";
 import { FilmPoster } from "@/components/film-poster";
 import { OnRepeat } from "@/components/on-repeat";
 import { Rise } from "@/components/reveal";
@@ -21,6 +22,7 @@ const FALLBACK: Favorite[] = [
 ];
 
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
+  preloadArt("me");
   const lang = asLang((await params).lang);
   const t = copy[lang].me;
   const [track, films] = await Promise.all([getNowPlaying(), getFilms()]);

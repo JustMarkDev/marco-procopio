@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { preloadArt } from "@/components/art-image";
 import { CopyEmail } from "@/components/copy-email";
 import { LinkTiles } from "@/components/link-tiles";
 import { Rise, Words } from "@/components/reveal";
@@ -9,6 +10,7 @@ import { asLang, copy } from "@/lib/copy";
 export const metadata: Metadata = { title: "About" };
 
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
+  preloadArt("about");
   const lang = asLang((await params).lang);
   const t = copy[lang].about;
 

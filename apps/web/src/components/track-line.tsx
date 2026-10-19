@@ -1,23 +1,19 @@
 "use client";
 
-import { motion } from "motion/react";
-
 import type { Track } from "@/lib/lastfm";
 
 import { Equalizer, useTrack } from "./live-track";
 import { PageLink } from "./page-link";
-import { EASE, ENTER } from "./reveal";
+import { after } from "./reveal";
 
 /** Index footer: the live track and a way into the "me" page. */
 export function TrackLine({ initial, more }: { initial: Track | null; more: string }) {
   const track = useTrack(initial);
 
   return (
-    <motion.footer
-      className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-12 pb-10 md:pb-20"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: EASE, delay: ENTER + 0.55 }}
+    <footer
+      className="enter flex flex-wrap items-center gap-x-3 gap-y-1 pt-12 pb-10 [--enter-y:10px] md:pb-20"
+      style={after(0.55)}
     >
       <Equalizer playing={track.playing} />
       <a
@@ -37,6 +33,6 @@ export function TrackLine({ initial, more }: { initial: Track | null; more: stri
           →
         </span>
       </PageLink>
-    </motion.footer>
+    </footer>
   );
 }

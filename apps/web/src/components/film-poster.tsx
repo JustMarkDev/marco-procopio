@@ -4,7 +4,7 @@ import { animate, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 import { common, cover, createProgram, loadTexture } from "./gl";
-import { EASE, ENTER } from "./reveal";
+import { after } from "./reveal";
 
 // Dithered poster; cells below `u_r` in Bayer order show the real image instead.
 const fragment = `${common}
@@ -55,63 +55,75 @@ export function FilmPoster({
     box.append(canvas);
     const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
     if (!gl) return () => canvas.remove();
-    const { program, u } = createProgram(gl, fragment);
-    const dpr = Math.min(devicePixelRatio, 2);
-    gl.uniform1f(u("u_px"), 2 * dpr);
-    gl.uniform1f(u("u_levels"), 4);
-    gl.uniform1f(u("u_contrast"), 1.1);
-    gl.uniform1f(u("u_saturation"), 1.2);
-    gl.uniform3f(u("u_bg"), 9 / 255, 9 / 255, 11 / 255);
-    let reveal = 0;
-    let loaded: Awaited<ReturnType<typeof loadTexture>> | null = null;
-    let alive = true;
+    const start = ({ program, u }: Awaited<ReturnType<typeof createProgram>>) => {
+      const dpr = Math.min(devicePixelRatio, 2);
+      gl.uniform1f(u("u_px"), 2 * dpr);
+      gl.uniform1f(u("u_levels"), 4);
+      gl.uniform1f(u("u_contrast"), 1.1);
+      gl.uniform1f(u("u_saturation"), 1.2);
+      gl.uniform3f(u("u_bg"), 9 / 255, 9 / 255, 11 / 255);
+      let reveal = 0;
+      let loaded: Awaited<ReturnType<typeof loadTexture>> | null = null;
+      let alive = true;
 
-    const draw = () => {
-      if (!loaded) return;
-      const c = cover(loaded, canvas.width, canvas.height);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(u("u_res"), canvas.width, canvas.height);
-      gl.uniform4f(u("u_cover"), c.scale[0], c.scale[1], c.centre[0], c.centre[1]);
-      gl.uniform1f(u("u_r"), reveal);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
-    const resize = () => {
-      canvas.width = Math.round(canvas.clientWidth * dpr);
-      canvas.height = Math.round(canvas.clientHeight * dpr);
-      draw();
-    };
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas);
-
-    let controls: ReturnType<typeof animate> | undefined;
-    setReveal.current = (to) => {
-      controls?.stop();
-      controls = animate(reveal, to, {
-        duration: reduce ? 0 : 0.55,
-        ease: "easeInOut",
-        onUpdate: (v) => {
-          reveal = v;
-          draw();
-        },
-      });
-    };
-
-    loadTexture(gl, image, { width: 256, height: 384 }).then(
-      (l) => {
-        if (!alive) return;
-        loaded = l;
+      const draw = () => {
+        if (!loaded) return;
+        const c = cover(loaded, canvas.width, canvas.height);
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.uniform2f(u("u_res"), canvas.width, canvas.height);
+        gl.uniform4f(u("u_cover"), c.scale[0], c.scale[1], c.centre[0], c.centre[1]);
+        gl.uniform1f(u("u_r"), reveal);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+      const resize = () => {
+        canvas.width = Math.round(canvas.clientWidth * dpr);
+        canvas.height = Math.round(canvas.clientHeight * dpr);
         draw();
-        setReady(true);
-      },
-      () => {},
-    );
+      };
+      const observer = new ResizeObserver(resize);
+      observer.observe(canvas);
 
+      let controls: ReturnType<typeof animate> | undefined;
+      setReveal.current = (to) => {
+        controls?.stop();
+        controls = animate(reveal, to, {
+          duration: reduce ? 0 : 0.55,
+          ease: "easeInOut",
+          onUpdate: (v) => {
+            reveal = v;
+            draw();
+          },
+        });
+      };
+
+      loadTexture(gl, image, { width: 256, height: 384 }).then(
+        (l) => {
+          if (!alive) return;
+          loaded = l;
+          draw();
+          setReady(true);
+        },
+        () => {},
+      );
+
+      return () => {
+        alive = false;
+        controls?.stop();
+        observer.disconnect();
+        if (loaded) gl.deleteTexture(loaded.texture);
+        gl.deleteProgram(program);
+      };
+    };
+
+    let stop = () => {};
+    let cancelled = false;
+    void createProgram(gl, fragment).then((made) => {
+      if (cancelled) return gl.deleteProgram(made.program);
+      stop = start(made);
+    });
     return () => {
-      alive = false;
-      controls?.stop();
-      observer.disconnect();
-      if (loaded) gl.deleteTexture(loaded.texture);
-      gl.deleteProgram(program);
+      cancelled = true;
+      stop();
       gl.getExtension("WEBGL_lose_context")?.loseContext();
       canvas.remove();
     };
@@ -121,12 +133,7 @@ export function FilmPoster({
   const off = () => setReveal.current(0);
 
   return (
-    <motion.li
-      className="min-w-0"
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: EASE, delay: ENTER + 0.25 + index * 0.07 }}
-    >
+    <li className="enter min-w-0 [--enter-y:24px]" style={after(0.25 + index * 0.07)}>
       <motion.a
         href={href}
         target="_blank"
@@ -157,6 +164,6 @@ export function FilmPoster({
           {meta}
         </p>
       </motion.a>
-    </motion.li>
+    </li>
   );
 }

@@ -45,8 +45,12 @@ vec3 quantize(vec3 rgb, float threshold) {
 }
 `;
 
-/** Compile and link a full-screen program, with the big triangle bound to attribute 0. */
-export function createProgram(gl: WebGLRenderingContext, fragment: string) {
+/**
+ * Compile and link a full-screen program, with the big triangle bound to attribute 0.
+ * Resolves once linking is done: where the browser can compile in parallel it does, so
+ * the page isn't blocked on the shader, otherwise the wait happens on first use.
+ */
+export async function createProgram(gl: WebGLRenderingContext, fragment: string) {
   const compile = (type: number, source: string) => {
     const s = gl.createShader(type)!;
     gl.shaderSource(s, source);
@@ -57,6 +61,16 @@ export function createProgram(gl: WebGLRenderingContext, fragment: string) {
   gl.attachShader(program, compile(gl.VERTEX_SHADER, vertex));
   gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragment));
   gl.linkProgram(program);
+  const parallel = gl.getExtension("KHR_parallel_shader_compile");
+  if (parallel) {
+    await new Promise<void>((done) => {
+      const poll = () =>
+        gl.getProgramParameter(program, parallel.COMPLETION_STATUS_KHR)
+          ? done()
+          : setTimeout(poll, 16);
+      poll();
+    });
+  }
   gl.useProgram(program);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
@@ -73,30 +87,40 @@ export function createProgram(gl: WebGLRenderingContext, fragment: string) {
 export type Loaded = { texture: WebGLTexture; width: number; height: number };
 
 /**
- * Load an image through the Next.js optimizer (same origin, so WebGL may read it, and
- * remote posters get resized) into a texture on `unit`.
+ * The optimizer's URL for an image, as a `srcset` when `sizes` says how wide it will be
+ * shown (the browser then picks one from the screen's pixels), else as the 2x URL of `size`.
+ * Same origin, so WebGL may read it, and remote posters get resized.
  */
+export function imageProps(src: string, size: { width: number; height: number }, sizes?: string) {
+  const { props } = getImageProps({ src, alt: "", ...size, sizes });
+  return { src: props.src, srcSet: props.srcSet, sizes: props.sizes };
+}
+
+/** Load an image into a texture on the bound unit. */
 export function loadTexture(
   gl: WebGLRenderingContext,
   src: string,
   size: { width: number; height: number },
+  sizes?: string,
 ): Promise<Loaded> {
-  const url = getImageProps({ src, alt: "", ...size }).props.src;
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => {
-      const texture = gl.createTexture()!;
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-      resolve({ texture, width: image.naturalWidth, height: image.naturalHeight });
-    };
-    image.onerror = reject;
-    image.src = url;
+  const props = imageProps(src, size, sizes);
+  const image = new Image();
+  if (props.srcSet) {
+    image.sizes = props.sizes ?? "";
+    image.srcset = props.srcSet;
+  }
+  image.src = props.src;
+  // Decoding ahead of the upload keeps that work off the main thread.
+  return image.decode().then(() => {
+    const texture = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+    return { texture, width: image.naturalWidth, height: image.naturalHeight };
   });
 }
 

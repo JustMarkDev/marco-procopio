@@ -1,3 +1,4 @@
+import { preloadArt } from "@/components/art-image";
 import { QuickLinks } from "@/components/quick-links";
 import { Rise, Words } from "@/components/reveal";
 import { TrackLine } from "@/components/track-line";
@@ -9,6 +10,7 @@ import { asLang, copy } from "@/lib/copy";
 export const revalidate = 3600;
 
 export default async function Page({ params }: { params: Promise<{ lang: string }> }) {
+  preloadArt("index");
   const lang = asLang((await params).lang);
   const t = copy[lang];
   const track = await getNowPlaying();

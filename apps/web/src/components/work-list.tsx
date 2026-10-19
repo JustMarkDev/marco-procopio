@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
-import { EASE, ENTER } from "./reveal";
+import { after, EASE } from "./reveal";
 
 export type Row = {
   name: string;
@@ -21,10 +21,13 @@ export type Row = {
   meta: string;
   /** Omitted for private projects: the row is then not a link. */
   href?: string;
-  preview?: { src: string; width: number; height: number };
+  preview?: { src: string; width: number; height: number } | { live: string };
 };
 
-/** Project rows. With a mouse, a screenshot of the hovered project trails the cursor. */
+/** Viewport the live preview renders at, scaled down to the 280px card. */
+const LIVE = { width: 1440, height: 900, scale: 280 / 1440 };
+
+/** Project rows. With a mouse, a preview of the hovered project trails the cursor. */
 export function WorkList({ rows }: { rows: Row[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
   const x = useMotionValue(0);
@@ -73,19 +76,15 @@ export function WorkList({ rows }: { rows: Row[] }) {
               "group grid grid-cols-[1fr_auto_20px] items-center gap-x-6 gap-y-1 py-[18px] md:grid-cols-[330px_1fr_64px_20px]",
           };
           return (
-            <motion.li
+            <li
               key={r.name}
-              className="relative"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE, delay: ENTER + 0.2 + i * 0.07 }}
+              className="enter relative [--enter-y:18px]"
+              style={after(0.2 + i * 0.07)}
             >
-              <motion.span
+              <span
                 aria-hidden
-                className="absolute inset-x-0 top-0 h-px origin-left bg-white/15"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.1, ease: EASE, delay: ENTER + 0.2 + i * 0.07 }}
+                className="grow absolute inset-x-0 top-0 h-px origin-left bg-white/15"
+                style={after(0.2 + i * 0.07)}
               />
               {r.href ? (
                 <a
@@ -100,7 +99,7 @@ export function WorkList({ rows }: { rows: Row[] }) {
               ) : (
                 <div {...row}>{cells}</div>
               )}
-            </motion.li>
+            </li>
           );
         })}
       </ul>
@@ -113,21 +112,34 @@ export function WorkList({ rows }: { rows: Row[] }) {
         <AnimatePresence>
           {preview && (
             <motion.div
-              key={preview.src}
+              key={"live" in preview ? preview.live : preview.src}
               className="absolute -top-24 left-8 w-[280px] overflow-hidden rounded-md shadow-[0_24px_60px_-20px_rgb(0_0_0/0.9)] ring-1 ring-white/15"
               initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
               exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
               transition={{ duration: 0.35, ease: EASE }}
             >
-              <Image
-                src={preview.src}
-                alt=""
-                width={preview.width}
-                height={preview.height}
-                sizes="280px"
-                className="h-auto w-full"
-              />
+              {"live" in preview ? (
+                <div className="aspect-[16/10] overflow-hidden bg-dz-bg">
+                  <iframe
+                    src={preview.live}
+                    title=""
+                    tabIndex={-1}
+                    sandbox="allow-scripts allow-same-origin"
+                    className="origin-top-left border-0"
+                    style={{ width: LIVE.width, height: LIVE.height, scale: LIVE.scale }}
+                  />
+                </div>
+              ) : (
+                <Image
+                  src={preview.src}
+                  alt=""
+                  width={preview.width}
+                  height={preview.height}
+                  sizes="280px"
+                  className="h-auto w-full"
+                />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

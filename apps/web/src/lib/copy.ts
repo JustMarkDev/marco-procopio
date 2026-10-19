@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { langs, type Lang } from "@/lib/content";
 
-/** The `[lang]` route param, or a 404 for anything the proxy wouldn't produce. */
+/** The `[lang]` route param, or a 404 for anything the rewrites in next.config.ts wouldn't produce. */
 export const asLang = (value: string): Lang =>
   langs.includes(value as Lang) ? (value as Lang) : notFound();
 
@@ -11,7 +11,7 @@ export const asLang = (value: string): Lang =>
 export const pages = ["index", "work", "me", "about"] as const;
 export type Page = (typeof pages)[number];
 
-/** Public URL of a page. The language segment is added by the proxy, never shown. */
+/** Public URL of a page. The language segment is added by the rewrites in next.config.ts, never shown. */
 export const pagePath = (page: Page) => (page === "index" ? "/" : `/${page}`) as Route;
 
 export const pageFromPath = (path: string): Page => {
