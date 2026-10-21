@@ -15,15 +15,19 @@ export function TrackLine({ initial, more }: { initial: Track | null; more: stri
       className="enter flex flex-wrap items-center gap-x-3 gap-y-1 pt-12 pb-10 [--enter-y:10px] md:pb-20"
       style={after(0.55)}
     >
-      <Equalizer playing={track.playing} />
-      <a
-        href={track.url}
-        target="_blank"
-        rel="noreferrer"
-        className="transition-colors duration-150 hover:text-dz-accent"
-      >
-        {track.name} — {track.artist}
-      </a>
+      {track && (
+        <>
+          <Equalizer playing={track.playing} />
+          <a
+            href={track.url}
+            target="_blank"
+            rel="noreferrer"
+            className="transition-colors duration-150 hover:text-dz-accent"
+          >
+            {track.name} — {track.artist}
+          </a>
+        </>
+      )}
       <PageLink
         to="me"
         className="group text-white/80 transition-colors duration-150 hover:text-dz-text"

@@ -32,7 +32,6 @@
         "varlock": "catalog:",
       },
       "devDependencies": {
-        "@marco-procopio/config": "workspace:*",
         "@playwright/test": "^1.63.0",
         "@tailwindcss/postcss": "catalog:",
         "@types/node": "catalog:",

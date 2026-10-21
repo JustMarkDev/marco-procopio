@@ -10,6 +10,7 @@ URL: the `rewrites` in `apps/web/next.config.ts` pick from the browser's Accept-
 bun install
 bun run dev        # http://localhost:3001
 bun run check      # format, lint, type-check
+bun run test       # unit tests (language matcher, film shelf)
 bun run build
 bun run --cwd apps/web test:e2e   # Playwright smoke test (starts the dev server if needed)
 ```
@@ -18,12 +19,13 @@ bun run --cwd apps/web test:e2e   # Playwright smoke test (starts the dev server
 
 - `apps/web/src/lib/copy.ts`: all page copy, in both languages.
 - `apps/web/src/lib/content.ts`: links, profiles and the Work rows.
-- `apps/web/src/lib/lastfm.ts`, `favorites.ts`: Effect programs for the live track (Last.fm) and favourite films (Trakt).
+- `apps/web/src/lib/lastfm.ts`, `favorites.ts`: Effect programs for the live track (Last.fm) and favourite films (Trakt); `shelf.ts` orders the films.
+- `apps/web/language.ts`: the `Accept-Language` matcher behind the rewrites.
 - `apps/web/src/components/art-stage.tsx`, `gl.ts`, `scenes.ts`: the WebGL dither art behind each page and its cursor reveal.
 - `apps/web/public/art/`: background photos (sources in `scenes.ts`). `public/projects/`: project screenshots. `public/Marco_Procopio_CV_{EN,IT}.pdf`: downloadable CVs, one per language.
 
 ## Environment
 
 `LASTFM_API_KEY` and `TRAKT_CLIENT_ID` (both optional) turn on the live track and films;
-without them the pages show fallback content.
+without them the track line and the film shelf are left out.
 The schema is in `apps/web/.env.schema` (managed by varlock).

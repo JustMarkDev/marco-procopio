@@ -8,26 +8,20 @@ import type { Track } from "@/lib/lastfm";
 
 const POLL_MS = 30_000;
 
-/** Shown when Last.fm is off or down: the track from the design, not presented as playing. */
-export const FALLBACK: Track = {
-  name: "Weird Fishes / Arpeggi",
-  artist: "Radiohead",
-  album: "In Rainbows",
-  url: "https://www.last.fm/music/Radiohead/_/Weird+Fishes%2FArpeggi",
-  playing: false,
-};
-
-/** The server-rendered track, kept fresh by polling while the tab is visible. */
-export function useTrack(initial: Track | null): Track {
+/** The server-rendered track, kept fresh by polling while the tab is visible. Null when Last.fm is off or down. */
+export function useTrack(initial: Track | null): Track | null {
   const [track, setTrack] = useState(initial);
 
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | undefined;
     const load = () =>
       fetch("/api/now-playing")
-        .then((res) => (res.ok ? (res.json() as Promise<Track | null>) : null))
+        .then((res) => {
+          if (!res.ok) throw new Error(`Responded ${res.status}`);
+          return res.json() as Promise<Track | null>;
+        })
         // A null body means Last.fm is down or off: drop the old track rather than
-        // keep showing it as live. Network errors keep what's on screen.
+        // keep showing it as live. Network and server errors keep what's on screen.
         .then(setTrack, () => {});
     const start = () => {
       clearInterval(timer);
@@ -44,7 +38,7 @@ export function useTrack(initial: Track | null): Track {
     };
   }, []);
 
-  return track ?? FALLBACK;
+  return track;
 }
 
 /** "3 hours ago" in the page language. */

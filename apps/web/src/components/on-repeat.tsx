@@ -54,19 +54,40 @@ function Waveform({ playing }: { playing: boolean }) {
 /** The live Last.fm track, set as the page headline. */
 export function OnRepeat({
   lang,
+  title,
   t,
   initial,
 }: {
   lang: Lang;
+  /** The page headline, shown while there is no track to show. */
+  title: string;
   t: Copy["me"];
   initial: Track | null;
 }) {
   const track = useTrack(initial);
-  // Relative time depends on the clock, so it's only shown after hydration.
+  const playedAt = track?.playedAt;
+  // Relative time depends on the clock, so it's only shown after hydration, then kept current.
   const [when, setWhen] = useState<string | null>(null);
   useEffect(() => {
-    setWhen(track.playedAt ? ago(lang, track.playedAt) : null);
-  }, [lang, track.playedAt]);
+    if (!playedAt) return setWhen(null);
+    const update = () => setWhen(ago(lang, playedAt));
+    update();
+    const timer = setInterval(update, 60_000);
+    return () => clearInterval(timer);
+  }, [lang, playedAt]);
+
+  if (!track) {
+    return (
+      <section aria-labelledby="on-repeat" className="max-w-[720px]">
+        <h1
+          id="on-repeat"
+          className="font-display text-[clamp(3.25rem,7.2vw,6.5rem)] leading-[0.88] font-semibold tracking-[-0.043em]"
+        >
+          <Words text={title} />
+        </h1>
+      </section>
+    );
+  }
 
   return (
     <section aria-labelledby="on-repeat" className="max-w-[720px]">

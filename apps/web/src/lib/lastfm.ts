@@ -2,7 +2,7 @@ import { Effect, Schema } from "effect";
 
 import { ENV } from "@/env.server";
 import { profiles } from "@/lib/content";
-import { fetchJson, orElse } from "@/lib/http";
+import { fetchJson, isTransient, orElse } from "@/lib/http";
 
 export type Track = {
   name: string;
@@ -67,8 +67,16 @@ const artwork = (artist: string, name: string): Effect.Effect<Artwork> => {
   const key = `${artist} — ${name}`;
   const hit = artworkCache.get(key);
   if (hit) return Effect.succeed(hit);
+  // A timeout or outage must not be remembered as "this track has no artwork".
+  let outage = false;
+  const missing = (error: Parameters<typeof isTransient>[0]) =>
+    Effect.sync((): Artwork => {
+      outage ||= isTransient(error);
+      return {};
+    });
   const remember = (found: Artwork) =>
     Effect.sync(() => {
+      if (outage && !found.image) return;
       if (artworkCache.size >= 200) {
         const oldest = artworkCache.keys().next();
         if (oldest.value) artworkCache.delete(oldest.value);
@@ -82,7 +90,7 @@ const artwork = (artist: string, name: string): Effect.Effect<Artwork> => {
       album: track.album?.title,
     })),
     // Unknown track: fall back to the artist photo instead of failing.
-    Effect.catch(() => Effect.succeed<Artwork>({})),
+    Effect.catch(missing),
     Effect.flatMap((found) =>
       found.image
         ? Effect.succeed(found)
@@ -91,7 +99,7 @@ const artwork = (artist: string, name: string): Effect.Effect<Artwork> => {
             ArtistInfo,
           ).pipe(
             Effect.map(({ artist }): Artwork => ({ image: large(artist.image) })),
-            Effect.catch(() => Effect.succeed<Artwork>({})),
+            Effect.catch(missing),
           ),
     ),
     Effect.flatMap(remember),
@@ -127,6 +135,8 @@ export const getNowPlaying = () =>
             image: extra.image,
           }));
         }),
+        // The calls above retry, so cap the whole lookup: the route answers within a function limit.
+        Effect.timeout("8 seconds"),
         orElse("Last.fm", null),
         Effect.runPromise,
       );
