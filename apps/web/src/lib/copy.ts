@@ -27,7 +27,7 @@ export const copy = {
     nav: { index: "index", work: "work", me: "me", about: "about" },
     city: "milan",
     index: {
-      line: "CS student at Milano-Bicocca and junior developer. I build desktop apps, websites and tools, with AI agents as my everyday workflow.",
+      line: "Junior fullstack developer in Milan. I build desktop apps, websites and tools, with AI agents as my everyday workflow.",
       more: "more of what I'm into",
     },
     work: {
@@ -50,7 +50,7 @@ export const copy = {
     },
     about: {
       title: "say ciao.",
-      bio: "I'm Marco, a computer science student at Milano-Bicocca and a junior fullstack developer. AI agents are my default workflow, and I take testing seriously: 400+ tests in my biggest project.",
+      bio: "I'm Marco, a junior fullstack developer in Milan with Computer Science studies at Milano-Bicocca. AI agents are my default workflow, and I take testing seriously: 400+ tests in my biggest project.",
       bio2: "Since 2021 I've also run sound and lights at Teatro Procopio, about 50 shows a year. Looking for a junior product or fullstack role, in Milan or remote across the EU.",
       email: "email",
       elsewhere: "elsewhere",
@@ -66,7 +66,7 @@ export const copy = {
     nav: { index: "indice", work: "lavori", me: "io", about: "contatti" },
     city: "milano",
     index: {
-      line: "Studente di informatica alla Bicocca e junior developer. Costruisco app desktop, siti web e strumenti, con gli agenti AI come flusso di lavoro quotidiano.",
+      line: "Junior developer fullstack a Milano. Costruisco app desktop, siti web e strumenti, con gli agenti AI come flusso di lavoro quotidiano.",
       more: "altro di quello che mi piace",
     },
     work: {
@@ -92,7 +92,7 @@ export const copy = {
     },
     about: {
       title: "scrivimi.",
-      bio: "Sono Marco, studente di informatica alla Bicocca e junior fullstack developer. Gli agenti AI sono il mio modo di lavorare, e prendo sul serio i test: oltre 400 nel mio progetto più grande.",
+      bio: "Sono Marco, junior developer fullstack a Milano, con studi di informatica alla Bicocca. Gli agenti AI sono il mio modo di lavorare, e prendo sul serio i test: oltre 400 nel mio progetto più grande.",
       bio2: "Dal 2021 curo anche audio e luci al Teatro Procopio, circa 50 spettacoli l'anno. Cerco un ruolo junior product o fullstack, a Milano o da remoto in tutta l'UE.",
       email: "email",
       elsewhere: "altrove",
