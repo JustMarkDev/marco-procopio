@@ -25,7 +25,8 @@
     "dev": "vp run -r dev",
     "dev:web": "vp run --filter web dev",
     "build": "vp run -r build",
-    "check": "vp check",
+    "check": "vp check && bun run typecheck",
+    "typecheck": "bun check --no-script -p apps/web",
     "lint": "vp lint",
     "format": "vp fmt",
     "test": "vp test run --passWithNoTests",
@@ -52,7 +53,7 @@
   "devEngines": {
     "packageManager": {
       "name": "bun",
-      "version": "1.4.2",
+      "version": "1.4.4",
       "onFail": "download"
     }
   }
