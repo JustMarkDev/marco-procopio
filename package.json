@@ -8,8 +8,8 @@
     ],
     "catalog": {
       "typescript": "^7.0.2",
-      "@types/node": "^26.6.5",
-      "varlock": "1.23.0",
+      "@types/node": "^26.6.6",
+      "varlock": "1.24.0",
       "react": "^19.3.1",
       "react-dom": "^19.3.1",
       "@tailwindcss/postcss": "^4.3.3",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@marco-procopio/config": "workspace:*",
     "@types/node": "catalog:",
-    "rolldown": "1.2.15",
+    "rolldown": "1.2.16",
     "typescript": "catalog:",
     "varlock": "catalog:",
     "vite": "catalog:",
