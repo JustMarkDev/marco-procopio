@@ -8,16 +8,16 @@
     ],
     "catalog": {
       "typescript": "^7.0.2",
-      "@types/node": "^26.6.5",
-      "varlock": "1.23.0",
+      "@types/node": "^26.6.6",
+      "varlock": "1.24.0",
       "react": "^19.3.1",
       "react-dom": "^19.3.1",
-      "@tailwindcss/postcss": "^4.3.3",
+      "@tailwindcss/postcss": "^4.3.4",
       "@types/react": "^19.3.0",
       "@types/react-dom": "^19.3.0",
       "tailwindcss": "^4.3.3",
       "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
-      "vite-plus": "1.4.0"
+      "vite-plus": "1.5.0"
     }
   },
   "type": "module",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@marco-procopio/config": "workspace:*",
     "@types/node": "catalog:",
-    "rolldown": "1.2.15",
+    "rolldown": "1.3.0",
     "typescript": "catalog:",
     "varlock": "catalog:",
     "vite": "catalog:",
